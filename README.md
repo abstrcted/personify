@@ -92,19 +92,6 @@ personify/
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
 
-## Next Steps
-
-- [ ] Set up backend API server (Express.js)
-- [ ] Integrate Spotify API
-- [ ] Create authentication system
-- [ ] Build React components for UI
-- [ ] Add personality assessment quiz
-- [ ] Implement recommendation algorithm
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
 ## License
 
 This project is open source and available under the MIT License.
