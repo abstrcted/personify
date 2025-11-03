@@ -1,0 +1,19 @@
+.top-tracks-page {
+  max-width: 1400px;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  color: #fff;
+  margin: 0 0 0.5rem;
+}
+
+.page-subtitle {
+  color: #b3b3b3;
+  font-size: 1.1rem;
+  margin: 0;
+}

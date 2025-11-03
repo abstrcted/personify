@@ -1,0 +1,138 @@
+/* Spotify Login Component Styles */
+
+.spotify-login {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
+  border-radius: 20px;
+  color: white;
+  max-width: 500px;
+  margin: 2rem auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.spotify-login h2 {
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.spotify-login p {
+  margin-bottom: 2rem;
+  opacity: 0.95;
+  font-size: 1.1rem;
+}
+
+.btn-spotify {
+  background: #191414;
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn-spotify:hover {
+  background: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.btn-spotify:active {
+  transform: translateY(0);
+}
+
+.spotify-profile {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 600px;
+  margin: 2rem auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  color: #191414;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.profile-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #1db954;
+}
+
+.profile-info h3 {
+  margin: 0 0 0.5rem 0;
+  color: #191414;
+  font-size: 1.5rem;
+}
+
+.email {
+  color: #666;
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+}
+
+.spotify-info {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.badge {
+  background: #1db954;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.followers {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.btn-secondary {
+  background: #f0f0f0;
+  color: #191414;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: #e0e0e0;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
