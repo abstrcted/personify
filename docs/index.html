@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Personify - A music personality matching application that connects users' personality traits with music preferences using Spotify data.">
+    <title>Personify - Music Personality Matching</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 800px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #1ed760 0%, #1db954 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-size: 1.25rem;
+            color: #b3b3b3;
+            margin-bottom: 3rem;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .feature {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(30, 215, 96, 0.2);
+        }
+        
+        .feature h3 {
+            color: #1ed760;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature p {
+            color: #b3b3b3;
+            line-height: 1.6;
+        }
+        
+        .links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #1ed760;
+            color: #000;
+        }
+        
+        .btn-primary:hover {
+            background: #1db954;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(30, 215, 96, 0.3);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .credits {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #b3b3b3;
+            font-size: 0.9rem;
+        }
+        
+        .credits a {
+            color: #1ed760;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .credits a:hover {
+            color: #1db954;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Personify</h1>
+        <p class="subtitle">Discover how your music reflects your personality</p>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>Music Analysis</h3>
+                <p>Deep dive into your Spotify listening habits and discover patterns you never knew existed.</p>
+            </div>
+            <div class="feature">
+                <h3>Personality Insights</h3>
+                <p>Explore how your music taste reflects your personality through the Big Five traits.</p>
+            </div>
+            <div class="feature">
+                <h3>Find Your Match</h3>
+                <p>Connect with others who share similar music taste and personality profiles.</p>
+            </div>
+        </div>
+        
+        <div class="links">
+            <a href="https://github.com/abstrcted/personify" class="btn btn-primary" target="_blank" rel="noopener">View on GitHub</a>
+            <a href="https://github.com/abstrcted/personify/blob/primo/README.md" class="btn btn-secondary" target="_blank" rel="noopener">Documentation</a>
+        </div>
+        
+        <div class="credits">
+            <p><strong>Powered by:</strong></p>
+            <p>
+                <a href="https://getsongbpm.com">GetSongBPM API</a> for audio features and track analysis |
+                <a href="https://developer.spotify.com/documentation/web-api">Spotify Web API</a> for music data
+            </p>
+            <p style="margin-top: 1rem;">
+                © 2025 Personify | Built for TCSS 445 Database Systems Design
+            </p>
+        </div>
+    </div>
+</body>
+</html>
