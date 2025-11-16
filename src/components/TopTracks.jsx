@@ -1,7 +1,9 @@
 // Top Tracks Component - Displays user's top tracks from Spotify
 import { useState, useEffect } from 'react';
 import { useSpotifyAuth } from '../contexts/SpotifyAuthContext';
-import { Card, Button, Spinner, Badge } from 'react-bootstrap';
+import { Card, Button, Spinner, Badge, Collapse } from 'react-bootstrap';
+import AudioFeatures from './AudioFeatures';
+import { IconChevronDown, IconChevronUp } from '@tabler/icons-react';
 import './TopTracks.css';
 
 const TopTracks = () => {
@@ -12,6 +14,10 @@ const TopTracks = () => {
   const [timeRange, setTimeRange] = useState('medium_term');
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState(null);
+  const [audioFeaturesMap, setAudioFeaturesMap] = useState({});
+  const [expandedTrack, setExpandedTrack] = useState(null);
+  const [loadingFeatures, setLoadingFeatures] = useState(false);
+  const [loadingTrackFeatures, setLoadingTrackFeatures] = useState({});
 
   const fetchTopTracks = async () => {
     if (!accessToken) return;
@@ -45,6 +51,111 @@ const TopTracks = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, accessToken, timeRange]);
 
+  const fetchAudioFeatures = async () => {
+    if (tracks.length === 0) return;
+    
+    setLoadingFeatures(true);
+    
+    try {
+      // Prepare track data for GetSongBPM API
+      const tracksForBatch = tracks.map(track => ({
+        spotify_id: track.id,
+        artist: track.artists[0].name,
+        title: track.name
+      }));
+      
+      console.log(`🎵 Fetching audio features for ${tracksForBatch.length} tracks...`);
+      
+      const batchResponse = await fetch('http://127.0.0.1:3001/api/getsongbpm/batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tracks: tracksForBatch })
+      });
+
+      if (batchResponse.ok) {
+        const batchData = await batchResponse.json();
+        console.log(`✅ GetSongBPM processed ${batchData.processed} tracks`);
+        
+        // Create a map of spotify_id -> features
+        const featuresMap = {};
+        batchData.results.forEach(result => {
+          if (result.success && result.features) {
+            featuresMap[result.spotify_id] = result.features;
+          }
+        });
+        
+        setAudioFeaturesMap(featuresMap);
+        console.log(`✅ Successfully got features for ${Object.keys(featuresMap).length} tracks`);
+      } else {
+        console.warn('⚠️ GetSongBPM batch fetch failed');
+      }
+    } catch (error) {
+      console.error('❌ Error fetching audio features:', error);
+    } finally {
+      setLoadingFeatures(false);
+    }
+  };
+
+  const fetchSingleTrackFeatures = async (track) => {
+    console.log('🎵 fetchSingleTrackFeatures called for:', track.name);
+    
+    if (audioFeaturesMap[track.id]) {
+      // Already have features, just toggle
+      console.log('✅ Features already loaded, toggling display');
+      setExpandedTrack(expandedTrack === track.id ? null : track.id);
+      return;
+    }
+    
+    // Show loading state
+    setLoadingTrackFeatures(prev => ({ ...prev, [track.id]: true }));
+    
+    try {
+      const artist = track.artists[0]?.name || 'Unknown Artist';
+      const apiUrl = `http://127.0.0.1:3001/api/getsongbpm/track/${encodeURIComponent(artist)}/${encodeURIComponent(track.name)}`;
+      
+      console.log('📡 Fetching audio features from GetSong API:', apiUrl);
+      
+      const response = await fetch(apiUrl);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log('📥 GetSong API Response:', data);
+      
+      if (data.success && data.features) {
+        console.log('✅ Audio features loaded:', data.features);
+        
+        setAudioFeaturesMap(prev => ({
+          ...prev,
+          [track.id]: data.features
+        }));
+        setExpandedTrack(track.id);
+      } else if (data.notFound) {
+        // Track not in database - show a message in the UI
+        console.log('⚠️ Track not found in GetSong database');
+        setAudioFeaturesMap(prev => ({
+          ...prev,
+          [track.id]: { notFound: true, message: data.message }
+        }));
+        setExpandedTrack(track.id);
+      } else {
+        throw new Error(data.error || 'No features found');
+      }
+    } catch (error) {
+      console.error('❌ Failed to fetch audio features:', error.message);
+      // Store error state to show in UI
+      setAudioFeaturesMap(prev => ({
+        ...prev,
+        [track.id]: { error: true, message: error.message }
+      }));
+      setExpandedTrack(track.id);
+    } finally {
+      setLoadingTrackFeatures(prev => ({ ...prev, [track.id]: false }));
+    }
+  };
+
   const saveToDatabase = async () => {
     if (!accessToken || !user || tracks.length === 0) return;
 
@@ -52,37 +163,68 @@ const TopTracks = () => {
     setSaveMessage(null);
 
     try {
-      // Get track IDs for audio features
-      const trackIds = tracks.map(t => t.id);
+      // Prepare track data for GetSongBPM API
+      const tracksForBatch = tracks.map(track => ({
+        spotify_id: track.id,
+        artist: track.artists[0].name,
+        title: track.name
+      }));
       
-      let audioFeatures = null;
+      console.log(`🎵 Fetching audio features for ${tracksForBatch.length} tracks from GetSongBPM...`);
       
-      // Try to fetch audio features directly from Spotify (bypass backend)
+      // Fetch audio features from GetSongBPM API
+      let audioFeaturesMap = {};
+      
       try {
-        const trackIdsString = trackIds.join(',');
-        const directResponse = await fetch(
-          `https://api.spotify.com/v1/audio-features?ids=${trackIdsString}`,
-          {
-            headers: {
-              'Authorization': `Bearer ${accessToken}`
-            }
-          }
-        );
+        const batchResponse = await fetch('http://127.0.0.1:3001/api/getsongbpm/batch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tracks: tracksForBatch })
+        });
 
-        if (directResponse.ok) {
-          const directData = await directResponse.json();
-          audioFeatures = directData.audio_features;
-          console.log('✅ Fetched audio features directly from Spotify for', audioFeatures.length, 'tracks');
+        if (batchResponse.ok) {
+          const batchData = await batchResponse.json();
+          console.log(`✅ GetSongBPM processed ${batchData.processed} tracks`);
+          
+          // Create a map of spotify_id -> features
+          batchData.results.forEach(result => {
+            if (result.success && result.features) {
+              audioFeaturesMap[result.spotify_id] = result.features;
+            }
+          });
+          
+          console.log(`✅ Successfully got features for ${Object.keys(audioFeaturesMap).length} tracks`);
+          
+          // Store features in state for display
+          setAudioFeaturesMap(audioFeaturesMap);
         } else {
-          const errorData = await directResponse.json();
-          console.warn('⚠️ Direct fetch failed:', errorData);
-          console.warn('⚠️ Could not fetch audio features, saving tracks without them');
+          console.warn('⚠️ GetSongBPM batch fetch failed');
         }
       } catch (audioError) {
         console.warn('⚠️ Audio features fetch failed:', audioError.message);
       }
       
-      // Send tracks + audio features (or null) to backend for storage
+      // Convert audioFeaturesMap to array format matching Spotify's structure
+      const audioFeatures = tracks.map(track => {
+        const features = audioFeaturesMap[track.id];
+        if (features) {
+          return {
+            id: track.id,
+            tempo: features.tempo,
+            key: features.key,
+            energy: features.energy,
+            danceability: features.danceability,
+            valence: null, // GetSongBPM doesn't provide these
+            acousticness: null,
+            instrumentalness: null,
+            liveness: null,
+            speechiness: null
+          };
+        }
+        return null;
+      });
+      
+      // Send tracks + audio features to backend for storage
       const response = await fetch('http://127.0.0.1:3001/store-tracks-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -158,6 +300,22 @@ const TopTracks = () => {
           </div>
           
           <Button
+            variant="info"
+            onClick={fetchAudioFeatures}
+            disabled={loadingFeatures || tracks.length === 0}
+            className="features-button"
+          >
+            {loadingFeatures ? (
+              <>
+                <Spinner animation="border" size="sm" className="me-2" />
+                Loading Features...
+              </>
+            ) : (
+              <>🎼 Show Audio Features</>
+            )}
+          </Button>
+          
+          <Button
             variant="primary"
             onClick={saveToDatabase}
             disabled={saving || tracks.length === 0}
@@ -221,6 +379,43 @@ const TopTracks = () => {
                   </Badge>
                   <Badge bg="info">Popularity: {track.popularity}</Badge>
                 </div>
+                
+                {/* Audio Features Display - Always show button */}
+                <div className="track-audio-features">
+                  <Button
+                    variant="outline-success"
+                    size="sm"
+                    onClick={() => fetchSingleTrackFeatures(track)}
+                    className="features-toggle"
+                    disabled={loadingTrackFeatures[track.id]}
+                  >
+                    {loadingTrackFeatures[track.id] ? (
+                      <>
+                        <Spinner animation="border" size="sm" /> Loading...
+                      </>
+                    ) : expandedTrack === track.id && audioFeaturesMap[track.id] ? (
+                      <>
+                        <IconChevronUp size={16} /> Hide Features
+                      </>
+                    ) : (
+                      <>
+                        <IconChevronDown size={16} /> Show Features
+                      </>
+                    )}
+                  </Button>
+                  
+                  <Collapse in={expandedTrack === track.id && !!audioFeaturesMap[track.id]}>
+                    <div className="features-collapse">
+                      {audioFeaturesMap[track.id] && (
+                        <AudioFeatures 
+                          features={audioFeaturesMap[track.id]} 
+                          trackName={null}
+                        />
+                      )}
+                    </div>
+                  </Collapse>
+                </div>
+                
                 <div className="track-actions">
                   <Button
                     href={track.external_urls.spotify}

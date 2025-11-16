@@ -40,6 +40,12 @@
   font-weight: 600;
 }
 
+.features-button {
+  font-weight: 600;
+  padding: 0.5rem 1.5rem;
+  white-space: nowrap;
+}
+
 .save-button {
   font-weight: 600;
   padding: 0.5rem 1.5rem;
@@ -196,4 +202,33 @@
   .track-image {
     height: 200px;
   }
+}
+
+/* Audio Features in Track Cards */
+.track-audio-features {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.features-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.features-collapse {
+  margin-top: 1rem;
+}
+
+.features-collapse .audio-features-card {
+  margin-bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.features-collapse .audio-features-card .card-body {
+  padding: 1rem;
 }

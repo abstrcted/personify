@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Database
+database/personify.db
+database/*.db
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
