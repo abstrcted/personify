@@ -111,45 +111,62 @@ const TopTracks = () => {
     
     try {
       const artist = track.artists[0]?.name || 'Unknown Artist';
+
+      // First try local DB
+      const dbUrl = `http://127.0.0.1:3001/api/db/track/${encodeURIComponent(artist)}/${encodeURIComponent(track.name)}`;
+      console.log('📡 Checking local DB for audio features:', dbUrl);
+      let response = await fetch(dbUrl);
+      if (response.ok) {
+        const dbData = await response.json();
+        console.log('📥 Local DB response:', dbData);
+        if (dbData.success && dbData.features) {
+          setAudioFeaturesMap(prev => ({ ...prev, [track.id]: dbData.features }));
+          setExpandedTrack(track.id);
+          return;
+        }
+      }
+
+      // Try RapidAPI Track Analysis
+      const rapidUrl = `http://127.0.0.1:3001/api/rapidapi/track/${encodeURIComponent(artist)}/${encodeURIComponent(track.name)}`;
+      console.log('📡 Trying RapidAPI Track Analysis:', rapidUrl);
+      response = await fetch(rapidUrl);
+      if (response.ok) {
+        const rapidData = await response.json();
+        console.log('📥 RapidAPI response:', rapidData);
+        if (rapidData.success && rapidData.features) {
+          console.log('✅ Audio features loaded from RapidAPI:', rapidData.features);
+          setAudioFeaturesMap(prev => ({ ...prev, [track.id]: rapidData.features }));
+          setExpandedTrack(track.id);
+          return;
+        }
+      }
+
+      // Fall back to GetSong API
       const apiUrl = `http://127.0.0.1:3001/api/getsongbpm/track/${encodeURIComponent(artist)}/${encodeURIComponent(track.name)}`;
-      
       console.log('📡 Fetching audio features from GetSong API:', apiUrl);
-      
-      const response = await fetch(apiUrl);
-      
+      response = await fetch(apiUrl);
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      
+
       const data = await response.json();
       console.log('📥 GetSong API Response:', data);
-      
+
       if (data.success && data.features) {
-        console.log('✅ Audio features loaded:', data.features);
-        
-        setAudioFeaturesMap(prev => ({
-          ...prev,
-          [track.id]: data.features
-        }));
+        console.log('✅ Audio features loaded from GetSong:', data.features);
+        setAudioFeaturesMap(prev => ({ ...prev, [track.id]: data.features }));
         setExpandedTrack(track.id);
       } else if (data.notFound) {
-        // Track not in database - show a message in the UI
         console.log('⚠️ Track not found in GetSong database');
-        setAudioFeaturesMap(prev => ({
-          ...prev,
-          [track.id]: { notFound: true, message: data.message }
-        }));
+        setAudioFeaturesMap(prev => ({ ...prev, [track.id]: { notFound: true, message: data.message } }));
         setExpandedTrack(track.id);
       } else {
         throw new Error(data.error || 'No features found');
       }
     } catch (error) {
       console.error('❌ Failed to fetch audio features:', error.message);
-      // Store error state to show in UI
-      setAudioFeaturesMap(prev => ({
-        ...prev,
-        [track.id]: { error: true, message: error.message }
-      }));
+      setAudioFeaturesMap(prev => ({ ...prev, [track.id]: { error: true, message: error.message } }));
       setExpandedTrack(track.id);
     } finally {
       setLoadingTrackFeatures(prev => ({ ...prev, [track.id]: false }));

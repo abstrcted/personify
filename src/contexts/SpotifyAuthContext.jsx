@@ -2,6 +2,7 @@
 // Manages Spotify access tokens and user authentication state
 
 import { createContext, useContext, useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 const SpotifyAuthContext = createContext();
 
@@ -21,6 +22,7 @@ export const SpotifyAuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   // Check for existing tokens on mount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const storedAccessToken = localStorage.getItem('spotify_access_token');
     const storedRefreshToken = localStorage.getItem('spotify_refresh_token');
@@ -124,6 +126,7 @@ export const SpotifyAuthProvider = ({ children }) => {
   };
 
   // Check if token needs refresh
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!accessToken || !expiresAt || !refreshToken) return;
 
@@ -158,4 +161,8 @@ export const SpotifyAuthProvider = ({ children }) => {
       {children}
     </SpotifyAuthContext.Provider>
   );
+};
+
+SpotifyAuthProvider.propTypes = {
+  children: PropTypes.node
 };

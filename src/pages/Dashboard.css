@@ -1,7 +1,7 @@
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
 }
 
 .dashboard-content {
@@ -16,4 +16,30 @@
     margin-left: 0;
     padding: 1rem;
   }
+}
+
+/* Centered inner content wrapper used by pages to limit content width while
+   allowing the dashboard to expand. Adjust `max-width` to taste. */
+/* removed .content-inner wrapper (reverted) */
+.dashboard-content .content-inner,
+.content-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+/* Alternative safe centering without changing JSX: center the main
+   sections inside `.home-dashboard` so no wrapper is required. */
+.home-dashboard > .page-header,
+.home-dashboard > .stats-grid,
+.home-dashboard > .browse-controls,
+.home-track-browser {
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
 }

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Query 2: Track Search | Personify</title>
+    <link rel="stylesheet" href="query1.html" media="none" onload="this.media='all'">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); padding: 40px; }
+        h1 { color: #333; margin-bottom: 10px; }
+        .description { color: #666; margin-bottom: 30px; font-size: 14px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #333; font-weight: 600; }
+        input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; transition: border-color 0.3s; }
+        input:focus { outline: none; border-color: #667eea; }
+        .btn { padding: 12px 30px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .result { margin-top: 30px; animation: fadeIn 0.5s; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        th { background: #f5f5f5; font-weight: 600; color: #333; }
+        tr:hover { background: #f9f9f9; }
+        .loading { text-align: center; padding: 20px; color: #666; }
+        .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .nav-links { margin-top: 30px; padding-top: 20px; border-top: 2px solid #e0e0e0; }
+        .nav-links a { display: inline-block; margin-right: 15px; color: #667eea; text-decoration: none; font-weight: 600; }
+        .nav-links a:hover { text-decoration: underline; }
+        .count-badge { display: inline-block; background: #667eea; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; margin-left: 10px; }
+        .error { color: #f44336; padding: 15px; background: #ffebee; border-radius: 8px; border-left: 4px solid #f44336; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Query 2: Track Search</h1>
+        <p class="description">Pattern 2 - Search with dynamic table rendering</p>
+        
+        <form id="queryForm">
+            <div class="form-group">
+                <label for="keyword">Search Keyword *</label>
+                <input type="text" id="keyword" name="keyword" required minlength="2" placeholder="Search by track name or artist...">
+            </div>
+            
+            <button type="submit" class="btn btn-primary" id="submitBtn">Search</button>
+        </form>
+        
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Searching...</p>
+        </div>
+        
+        <div id="result"></div>
+        
+        <div class="nav-links">
+            <a href="query1.html">← Query 1</a>
+            <a href="index.html">Home</a>
+            <a href="query3.html">Query 3 →</a>
+        </div>
+    </div>
+    
+    <script>
+        const form = document.getElementById('queryForm');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const keyword = document.getElementById('keyword').value.trim();
+            
+            if (keyword.length < 2) {
+                result.innerHTML = '<div class="error">Search keyword must be at least 2 characters</div>';
+                return;
+            }
+            
+            loading.style.display = 'block';
+            result.innerHTML = '';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch(`http://127.0.0.1:3001/api/db/search?q=${encodeURIComponent(keyword)}`);
+                const data = await response.json();
+                
+                if (data.success && data.tracks) {
+                    if (data.tracks.length === 0) {
+                        result.innerHTML = '<div class="error">No tracks found matching your search</div>';
+                    } else {
+                        let html = `<h3>Search Results <span class="count-badge">${data.tracks.length} tracks</span></h3>`;
+                        html += '<table><thead><tr><th>Track</th><th>Artist</th><th>Album</th><th>Energy</th><th>Valence</th><th>Tempo</th></tr></thead><tbody>';
+                        
+                        data.tracks.forEach(track => {
+                            html += `<tr>
+                                <td><strong>${track.track_name || 'Unknown'}</strong></td>
+                                <td>${track.artists || 'Unknown'}</td>
+                                <td>${track.album_name || 'Unknown'}</td>
+                                <td>${track.energy ? (track.energy * 100).toFixed(0) + '%' : 'N/A'}</td>
+                                <td>${track.valence ? (track.valence * 100).toFixed(0) + '%' : 'N/A'}</td>
+                                <td>${track.tempo ? Math.round(track.tempo) + ' BPM' : 'N/A'}</td>
+                            </tr>`;
+                        });
+                        
+                        html += '</tbody></table>';
+                        result.innerHTML = html;
+                    }
+                } else {
+                    result.innerHTML = '<div class="error">Search failed</div>';
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">Failed to search: ${error.message}</div>`;
+            } finally {
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

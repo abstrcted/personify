@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Query 6: Transaction Processing | Personify</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); padding: 40px; }
+        h1 { color: #333; margin-bottom: 10px; }
+        .description { color: #666; margin-bottom: 20px; font-size: 14px; }
+        .info-box { background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 30px; border-left: 4px solid #2196f3; }
+        .info-box ul { margin-left: 20px; margin-top: 10px; }
+        .accounts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .account-card { background: #f5f5f5; padding: 15px; border-radius: 8px; text-align: center; }
+        .account-name { font-weight: 700; color: #333; font-size: 18px; }
+        .account-balance { color: #667eea; font-size: 24px; font-weight: 700; margin: 10px 0; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #333; font-weight: 600; }
+        select, input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; }
+        .checkbox-label { display: flex; align-items: center; gap: 10px; }
+        .checkbox-label input { width: auto; }
+        .btn { padding: 12px 30px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-right: 10px; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
+        .result { margin-top: 30px; padding: 20px; border-radius: 8px; animation: fadeIn 0.5s; }
+        .success { background: #e8f5e9; border-left: 4px solid #4caf50; }
+        .error { background: #ffebee; border-left: 4px solid #f44336; color: #c62828; }
+        .sql-flow { background: #f5f5f5; padding: 15px; border-radius: 8px; margin-top: 15px; font-family: 'Courier New', monospace; font-size: 12px; }
+        .loading { text-align: center; padding: 20px; }
+        .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .nav-links { margin-top: 30px; padding-top: 20px; border-top: 2px solid #e0e0e0; }
+        .nav-links a { display: inline-block; margin-right: 15px; color: #667eea; text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Query 6: Transaction Processing</h1>
+        <p class="description">Pattern 2 - Bank transfer with explicit transaction control (BEGIN/COMMIT/ROLLBACK)</p>
+        
+        <div class="info-box">
+            <h3>About This Transaction Demo</h3>
+            <ul>
+                <li><strong>Operation 1:</strong> Deduct amount from source account</li>
+                <li><strong>Operation 2:</strong> Add amount to destination account</li>
+                <li><strong>Atomicity:</strong> Both operations succeed or both are rolled back</li>
+            </ul>
+        </div>
+        
+        <h3>Current Account Balances</h3>
+        <div class="accounts-grid" id="accounts"></div>
+        
+        <form id="queryForm">
+            <div class="form-group">
+                <label for="fromAccount">From Account *</label>
+                <select id="fromAccount" required></select>
+            </div>
+            
+            <div class="form-group">
+                <label for="toAccount">To Account *</label>
+                <select id="toAccount" required></select>
+            </div>
+            
+            <div class="form-group">
+                <label for="amount">Transfer Amount ($) *</label>
+                <input type="number" id="amount" required min="0.01" step="0.01" placeholder="e.g., 100.00">
+            </div>
+            
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="simulateError">
+                    <span>Simulate Error (force rollback for testing)</span>
+                </label>
+            </div>
+            
+            <button type="submit" class="btn">Transfer Funds</button>
+            <button type="button" class="btn" onclick="loadAccounts()">Refresh Balances</button>
+        </form>
+        
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Processing transaction...</p>
+        </div>
+        
+        <div id="result"></div>
+        
+        <div class="nav-links">
+            <a href="query5.html">← Query 5</a>
+            <a href="index.html">Home</a>
+        </div>
+    </div>
+    
+    <script>
+        async function loadAccounts() {
+            try {
+                const response = await fetch('http://127.0.0.1:3001/api/transaction/accounts');
+                const data = await response.json();
+                
+                if (data.success && data.accounts) {
+                    const accountsDiv = document.getElementById('accounts');
+                    const fromSelect = document.getElementById('fromAccount');
+                    const toSelect = document.getElementById('toAccount');
+                    
+                    accountsDiv.innerHTML = '';
+                    fromSelect.innerHTML = '<option value="">Select account...</option>';
+                    toSelect.innerHTML = '<option value="">Select account...</option>';
+                    
+                    data.accounts.forEach(acc => {
+                        accountsDiv.innerHTML += `
+                            <div class="account-card">
+                                <div class="account-name">${acc.account_name}</div>
+                                <div class="account-balance">$${parseFloat(acc.balance).toFixed(2)}</div>
+                                <div>Account #${acc.account_id}</div>
+                            </div>
+                        `;
+                        
+                        const option1 = `<option value="${acc.account_id}">${acc.account_name} ($${parseFloat(acc.balance).toFixed(2)})</option>`;
+                        fromSelect.innerHTML += option1;
+                        toSelect.innerHTML += option1;
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to load accounts:', error);
+            }
+        }
+        
+        document.getElementById('queryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fromAccountId = parseInt(document.getElementById('fromAccount').value);
+            const toAccountId = parseInt(document.getElementById('toAccount').value);
+            const amount = parseFloat(document.getElementById('amount').value);
+            const simulateError = document.getElementById('simulateError').checked;
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            
+            if (!fromAccountId || !toAccountId) {
+                result.innerHTML = '<div class="result error">Both accounts must be selected</div>';
+                return;
+            }
+            
+            if (fromAccountId === toAccountId) {
+                result.innerHTML = '<div class="result error">Cannot transfer to the same account</div>';
+                return;
+            }
+            
+            loading.style.display = 'block';
+            result.innerHTML = '';
+            
+            try {
+                const response = await fetch('http://127.0.0.1:3001/api/transaction/transfer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fromAccountId, toAccountId, amount, simulateError })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    result.innerHTML = `
+                        <div class="result success">
+                            <h3>✓ Transaction Successful!</h3>
+                            <p>${data.message}</p>
+                            <p><strong>Transaction ID:</strong> ${data.transactionId}</p>
+                            <p><strong>New Balance (${data.details.fromAccount}):</strong> $${parseFloat(data.fromBalance).toFixed(2)}</p>
+                            <p><strong>New Balance (${data.details.toAccount}):</strong> $${parseFloat(data.toBalance).toFixed(2)}</p>
+                            <div class="sql-flow">
+                                <strong>SQL Execution Flow:</strong><br>
+                                1. BEGIN TRANSACTION;<br>
+                                2. UPDATE BankAccounts SET balance = balance - ${amount} WHERE account_id = ${fromAccountId};<br>
+                                3. UPDATE BankAccounts SET balance = balance + ${amount} WHERE account_id = ${toAccountId};<br>
+                                4. INSERT INTO TransactionLog (...);<br>
+                                5. COMMIT; ✓
+                            </div>
+                        </div>
+                    `;
+                    loadAccounts();
+                } else {
+                    result.innerHTML = `
+                        <div class="result error">
+                            <h3>✕ Transaction Failed (Rolled Back)</h3>
+                            <p>${data.message}</p>
+                            <p><strong>Reason:</strong> ${data.error || data.reason}</p>
+                            <div class="sql-flow">
+                                <strong>SQL Execution Flow:</strong><br>
+                                1. BEGIN TRANSACTION;<br>
+                                2. Error detected: ${data.error}<br>
+                                3. ROLLBACK; ⟲ (all changes reverted)
+                            </div>
+                        </div>
+                    `;
+                    loadAccounts();
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="result error">Failed to process transfer: ${error.message}</div>`;
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+        
+        // Load accounts on page load
+        window.onload = () => loadAccounts();
+    </script>
+</body>
+</html>

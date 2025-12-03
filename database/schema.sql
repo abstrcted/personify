@@ -88,3 +88,33 @@ CREATE INDEX IF NOT EXISTS idx_track_popularity ON TRACK(popularity);
 CREATE INDEX IF NOT EXISTS idx_traits_user ON TRAITS(user_id);
 CREATE INDEX IF NOT EXISTS idx_track_artist_track ON TRACK_ARTIST(track_id);
 CREATE INDEX IF NOT EXISTS idx_track_artist_artist ON TRACK_ARTIST(artist_id);
+
+-- ==================== TRANSACTION DEMO TABLE ====================
+-- Bank Accounts table for transaction processing demonstration
+CREATE TABLE IF NOT EXISTS BankAccounts (
+    account_id INTEGER PRIMARY KEY,
+    account_name VARCHAR(50) NOT NULL,
+    balance DECIMAL(10, 2) NOT NULL CHECK(balance >= 0),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Seed data for transaction demo
+INSERT OR IGNORE INTO BankAccounts (account_id, account_name, balance) VALUES 
+    (1, 'Alice', 500.00),
+    (2, 'Bob', 300.00),
+    (3, 'Charlie', 150.00);
+
+-- Transaction history log
+CREATE TABLE IF NOT EXISTS TransactionLog (
+    transaction_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    from_account INTEGER,
+    to_account INTEGER,
+    amount DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(20) NOT NULL, -- 'SUCCESS' or 'FAILED'
+    error_message TEXT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (from_account) REFERENCES BankAccounts(account_id),
+    FOREIGN KEY (to_account) REFERENCES BankAccounts(account_id)
+);
+

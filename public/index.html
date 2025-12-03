@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personify - Database Query Interfaces</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); padding: 40px; }
+        h1 { color: #333; margin-bottom: 10px; font-size: 36px; }
+        .subtitle { color: #666; margin-bottom: 40px; font-size: 18px; }
+        .queries-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .query-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; text-decoration: none; display: block; transition: transform 0.3s, box-shadow 0.3s; }
+        .query-card:hover { transform: translateY(-5px); box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4); }
+        .query-card h2 { margin-bottom: 10px; font-size: 24px; }
+        .query-card p { opacity: 0.9; font-size: 14px; line-height: 1.6; }
+        .pattern-badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 12px; font-size: 11px; margin-top: 10px; font-weight: 600; }
+        .info-section { background: #f5f5f5; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+        .info-section h3 { color: #333; margin-bottom: 15px; }
+        .info-section ul { margin-left: 20px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Personify Database Queries</h1>
+        <p class="subtitle">Six query interfaces demonstrating two implementation patterns</p>
+        
+        <div class="info-section">
+            <h3>Implementation Patterns</h3>
+            <ul>
+                <li><strong>Pattern 1:</strong> Simple lookup/submission with direct result display (Queries 1, 4, 5)</li>
+                <li><strong>Pattern 2:</strong> Complex operations with dynamic table rendering (Queries 2, 3, 6)</li>
+            </ul>
+        </div>
+        
+        <div class="queries-grid">
+            <a href="query1.html" class="query-card">
+                <h2>Query 1: Track Lookup</h2>
+                <p>Search for a specific track by artist and title. Displays audio features including energy, valence, danceability, and tempo.</p>
+                <span class="pattern-badge">Pattern 1</span>
+            </a>
+            
+            <a href="query2.html" class="query-card">
+                <h2>Query 2: Track Search</h2>
+                <p>Search the database by keyword. Returns matching tracks in a dynamic table with sortable results.</p>
+                <span class="pattern-badge">Pattern 2</span>
+            </a>
+            
+            <a href="query3.html" class="query-card">
+                <h2>Query 3: Browse Tracks</h2>
+                <p>Browse all tracks with pagination and sorting options. Explore the entire music database efficiently.</p>
+                <span class="pattern-badge">Pattern 2</span>
+            </a>
+            
+            <a href="query4.html" class="query-card">
+                <h2>Query 4: User Statistics</h2>
+                <p>View a user's music profile statistics including average audio features across their liked songs.</p>
+                <span class="pattern-badge">Pattern 1</span>
+            </a>
+            
+            <a href="query5.html" class="query-card">
+                <h2>Query 5: Add Liked Song</h2>
+                <p>Add a track to a user's liked songs collection. Simple submission with success confirmation.</p>
+                <span class="pattern-badge">Pattern 1</span>
+            </a>
+            
+            <a href="query6.html" class="query-card">
+                <h2>Query 6: Transaction Processing</h2>
+                <p>Bank transfer demo with explicit BEGIN/COMMIT/ROLLBACK transaction control. Demonstrates atomicity and error handling.</p>
+                <span class="pattern-badge">Pattern 2</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

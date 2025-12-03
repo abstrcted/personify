@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Query 1: Track Lookup | Personify</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            animation: fadeIn 0.5s;
+        }
+        
+        .success {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .error {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            color: #c62828;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .feature-label {
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .feature-value {
+            color: #333;
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .nav-links {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .nav-links a {
+            display: inline-block;
+            margin-right: 15px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Query 1: Track Lookup</h1>
+        <p class="description">Pattern 1 - Simple lookup with direct result display</p>
+        
+        <form id="queryForm">
+            <div class="form-group">
+                <label for="artist">Artist Name *</label>
+                <input type="text" id="artist" name="artist" required minlength="2" placeholder="e.g., Taylor Swift">
+            </div>
+            
+            <div class="form-group">
+                <label for="title">Track Title *</label>
+                <input type="text" id="title" name="title" required minlength="2" placeholder="e.g., Anti-Hero">
+            </div>
+            
+            <button type="submit" class="btn btn-primary" id="submitBtn">Search Track</button>
+        </form>
+        
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Searching...</p>
+        </div>
+        
+        <div id="result"></div>
+        
+        <div class="nav-links">
+            <a href="index.html">← Home</a>
+            <a href="query2.html">Query 2 →</a>
+        </div>
+    </div>
+    
+    <script>
+        const form = document.getElementById('queryForm');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const artist = document.getElementById('artist').value.trim();
+            const title = document.getElementById('title').value.trim();
+            
+            if (artist.length < 2 || title.length < 2) {
+                result.innerHTML = '<div class="result error">Artist and title must be at least 2 characters</div>';
+                return;
+            }
+            
+            loading.style.display = 'block';
+            result.innerHTML = '';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch(`http://127.0.0.1:3001/api/db/track/${encodeURIComponent(artist)}/${encodeURIComponent(title)}`);
+                const data = await response.json();
+                
+                if (data.success && data.features) {
+                    const track = data.features;
+                    result.innerHTML = `
+                        <div class="result success">
+                            <h3>${track.track_name || 'Unknown Track'}</h3>
+                            <p><strong>Artist:</strong> ${track.artists || 'Unknown'}</p>
+                            <p><strong>Album:</strong> ${track.album_name || 'Unknown'}</p>
+                            
+                            <div class="features-grid">
+                                <div class="feature-card">
+                                    <div class="feature-label">Energy</div>
+                                    <div class="feature-value">${track.energy ? (track.energy * 100).toFixed(0) + '%' : 'N/A'}</div>
+                                </div>
+                                <div class="feature-card">
+                                    <div class="feature-label">Valence</div>
+                                    <div class="feature-value">${track.valence ? (track.valence * 100).toFixed(0) + '%' : 'N/A'}</div>
+                                </div>
+                                <div class="feature-card">
+                                    <div class="feature-label">Danceability</div>
+                                    <div class="feature-value">${track.danceability ? (track.danceability * 100).toFixed(0) + '%' : 'N/A'}</div>
+                                </div>
+                                <div class="feature-card">
+                                    <div class="feature-label">Tempo</div>
+                                    <div class="feature-value">${track.tempo ? Math.round(track.tempo) + ' BPM' : 'N/A'}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    result.innerHTML = `<div class="result error">${data.message || 'Track not found'}</div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="result error">Failed to fetch track data: ${error.message}</div>`;
+            } finally {
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

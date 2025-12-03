@@ -3,14 +3,12 @@ import { useSpotifyAuth } from '../contexts/SpotifyAuthContext';
 import { 
   IconHome, 
   IconChartBar, 
-  IconHeadphones, 
   IconMusic, 
   IconMicrophone, 
-  IconGuitarPick,
   IconSparkles,
-  IconUsers,
   IconSettings,
-  IconLogout
+  IconLogout,
+  IconDatabase
 } from '@tabler/icons-react';
 import './Sidebar.css';
 
@@ -50,11 +48,6 @@ const Sidebar = () => {
           <span className="nav-text">Overview</span>
         </NavLink>
 
-        <NavLink to="/listening-history" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-          <IconHeadphones className="nav-icon" size={20} stroke={2} />
-          <span className="nav-text">Listening History</span>
-        </NavLink>
-
         <NavLink to="/top-tracks" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
           <IconMusic className="nav-icon" size={20} stroke={2} />
           <span className="nav-text">Top Tracks</span>
@@ -65,11 +58,6 @@ const Sidebar = () => {
           <span className="nav-text">Top Artists</span>
         </NavLink>
 
-        <NavLink to="/genres" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-          <IconGuitarPick className="nav-icon" size={20} stroke={2} />
-          <span className="nav-text">Genres</span>
-        </NavLink>
-
         <div className="nav-divider"></div>
 
         <NavLink to="/personality" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
@@ -77,9 +65,38 @@ const Sidebar = () => {
           <span className="nav-text">Personality Profile</span>
         </NavLink>
 
-        <NavLink to="/matching" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-          <IconUsers className="nav-icon" size={20} stroke={2} />
-          <span className="nav-text">Find Matches</span>
+        <div className="nav-divider"></div>
+
+        <div className="nav-section-title">Database Queries</div>
+        
+        <NavLink to="/query1" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+          <IconDatabase className="nav-icon" size={20} stroke={2} />
+          <span className="nav-text">Query 1: Track Lookup</span>
+        </NavLink>
+
+        <NavLink to="/query2" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+          <IconDatabase className="nav-icon" size={20} stroke={2} />
+          <span className="nav-text">Query 2: Track Search</span>
+        </NavLink>
+
+        <NavLink to="/query3" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+          <IconDatabase className="nav-icon" size={20} stroke={2} />
+          <span className="nav-text">Query 3: Browse Tracks</span>
+        </NavLink>
+
+        <NavLink to="/query4" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+          <IconDatabase className="nav-icon" size={20} stroke={2} />
+          <span className="nav-text">Query 4: User Stats</span>
+        </NavLink>
+
+        <NavLink to="/query5" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+          <IconDatabase className="nav-icon" size={20} stroke={2} />
+          <span className="nav-text">Query 5: Add Favorite</span>
+        </NavLink>
+
+        <NavLink to="/query6" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+          <IconDatabase className="nav-icon" size={20} stroke={2} />
+          <span className="nav-text">Query 6: Transaction</span>
         </NavLink>
 
         <div className="nav-divider"></div>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Query 4: User Statistics | Personify</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); padding: 40px; }
+        h1 { color: #333; margin-bottom: 10px; }
+        .description { color: #666; margin-bottom: 30px; font-size: 14px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #333; font-weight: 600; }
+        input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; }
+        .btn { padding: 12px 30px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .result { margin-top: 30px; padding: 20px; background: #e8f5e9; border-radius: 8px; border-left: 4px solid #4caf50; }
+        .stat-bar { margin: 15px 0; }
+        .stat-label { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .progress-bar { background: #e0e0e0; height: 30px; border-radius: 15px; overflow: hidden; }
+        .progress-fill { background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; display: flex; align-items: center; padding: 0 15px; color: white; font-weight: 600; transition: width 0.5s; }
+        .error { color: #f44336; padding: 15px; background: #ffebee; border-radius: 8px; }
+        .loading { text-align: center; padding: 20px; }
+        .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .nav-links { margin-top: 30px; padding-top: 20px; border-top: 2px solid #e0e0e0; }
+        .nav-links a { display: inline-block; margin-right: 15px; color: #667eea; text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Query 4: User Statistics</h1>
+        <p class="description">Pattern 1 - Simple lookup with straightforward result display</p>
+        
+        <form id="queryForm">
+            <div class="form-group">
+                <label for="userId">User ID *</label>
+                <input type="number" id="userId" name="userId" required min="1" placeholder="Enter user ID (e.g., 1)">
+            </div>
+            
+            <button type="submit" class="btn">Get Statistics</button>
+        </form>
+        
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading statistics...</p>
+        </div>
+        
+        <div id="result"></div>
+        
+        <div class="nav-links">
+            <a href="query3.html">← Query 3</a>
+            <a href="index.html">Home</a>
+            <a href="query5.html">Query 5 →</a>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('queryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const userId = document.getElementById('userId').value;
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            
+            loading.style.display = 'block';
+            result.innerHTML = '';
+            
+            try {
+                const response = await fetch(`http://127.0.0.1:3001/api/user-stats/${userId}`);
+                const data = await response.json();
+                
+                if (data.success && data.stats) {
+                    const stats = data.stats;
+                    
+                    if (stats.total_liked_songs === 0) {
+                        result.innerHTML = '<div class="error">No liked songs found for this user</div>';
+                    } else {
+                        result.innerHTML = `
+                            <div class="result">
+                                <h3>${stats.username}'s Music Profile</h3>
+                                <p><strong>Total Liked Songs:</strong> ${stats.total_liked_songs}</p>
+                                
+                                <div class="stat-bar">
+                                    <div class="stat-label">
+                                        <span><strong>Energy</strong></span>
+                                        <span>${(stats.avg_energy * 100).toFixed(0)}%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${stats.avg_energy * 100}%">${(stats.avg_energy * 100).toFixed(0)}%</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-bar">
+                                    <div class="stat-label">
+                                        <span><strong>Valence (Positivity)</strong></span>
+                                        <span>${(stats.avg_valence * 100).toFixed(0)}%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${stats.avg_valence * 100}%">${(stats.avg_valence * 100).toFixed(0)}%</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-bar">
+                                    <div class="stat-label">
+                                        <span><strong>Danceability</strong></span>
+                                        <span>${(stats.avg_danceability * 100).toFixed(0)}%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${stats.avg_danceability * 100}%">${(stats.avg_danceability * 100).toFixed(0)}%</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-bar">
+                                    <div class="stat-label">
+                                        <span><strong>Tempo</strong></span>
+                                        <span>${stats.avg_tempo.toFixed(0)} BPM</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${(stats.avg_tempo / 200) * 100}%">${stats.avg_tempo.toFixed(0)} BPM</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    result.innerHTML = `<div class="error">${data.message || 'Failed to fetch statistics'}</div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

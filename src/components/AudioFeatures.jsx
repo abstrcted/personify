@@ -1,5 +1,5 @@
-import React from 'react';
 import { Card, ProgressBar, Badge } from 'react-bootstrap';
+import PropTypes from 'prop-types';
 import { IconMusic, IconBolt, IconMoodHappy, IconWalk, IconKey, IconGauge } from '@tabler/icons-react';
 import './AudioFeatures.css';
 
@@ -185,6 +185,26 @@ const AudioFeatures = ({ features, trackName }) => {
       </Card.Body>
     </Card>
   );
+};
+
+AudioFeatures.propTypes = {
+  trackName: PropTypes.string,
+  features: PropTypes.shape({
+    error: PropTypes.bool,
+    message: PropTypes.string,
+    notFound: PropTypes.bool,
+    tempo: PropTypes.number,
+    key: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    energy: PropTypes.number,
+    danceability: PropTypes.number,
+    valence: PropTypes.number,
+    acousticness: PropTypes.number,
+    instrumentalness: PropTypes.number,
+    liveness: PropTypes.number,
+    speechiness: PropTypes.number,
+    loudness: PropTypes.number,
+    genre: PropTypes.string
+  })
 };
 
 export default AudioFeatures;
