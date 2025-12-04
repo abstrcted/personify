@@ -1,5 +1,4 @@
 -- Personify Database Schema
--- Music personality matching application
 
 -- Users table
 CREATE TABLE IF NOT EXISTS USER (
@@ -12,12 +11,24 @@ CREATE TABLE IF NOT EXISTS USER (
 -- User personality traits
 CREATE TABLE IF NOT EXISTS TRAITS (
     trait_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
-    extraversion INTEGER CHECK(extraversion >= 0 AND extraversion <= 100),
-    openness INTEGER CHECK(openness >= 0 AND openness <= 100),
-    conscientiousness INTEGER CHECK(conscientiousness >= 0 AND conscientiousness <= 100),
-    agreeableness INTEGER CHECK(agreeableness >= 0 AND agreeableness <= 100),
-    calmness INTEGER CHECK(calmness >= 0 AND calmness <= 100),
+    user_id INTEGER NOT NULL UNIQUE,
+    -- Primary traits (calculated from audio features)
+    reflective INTEGER CHECK(reflective >= 0 AND reflective <= 100), -- Based on speechiness (lower = more reflective/instrumental)
+    moodiness INTEGER CHECK(moodiness >= 0 AND moodiness <= 100), -- Based on valence (lower valence = higher moodiness)
+    openness INTEGER CHECK(openness >= 0 AND openness <= 100), -- Based on artist variety
+    chaoticness INTEGER CHECK(chaoticness >= 0 AND chaoticness <= 100), -- Based on energy, danceability, valence
+    extraversion INTEGER CHECK(extraversion >= 0 AND extraversion <= 100), -- Based on valence and danceability
+    whimsy INTEGER CHECK(whimsy >= 0 AND whimsy <= 100), -- Based on acousticness and instrumentalness
+    -- Opposite traits (automatically calculated as 100 - primary trait)
+    balance INTEGER CHECK(balance >= 0 AND balance <= 100), -- Opposite of openness
+    calmness INTEGER CHECK(calmness >= 0 AND calmness <= 100), -- Opposite of chaoticness
+    groundedness INTEGER CHECK(groundedness >= 0 AND groundedness <= 100), -- Opposite of whimsy
+    introspection INTEGER CHECK(introspection >= 0 AND introspection <= 100), -- Opposite of extraversion
+    joyfulness INTEGER CHECK(joyfulness >= 0 AND joyfulness <= 100), -- Opposite of moodiness
+    conversational INTEGER CHECK(conversational >= 0 AND conversational <= 100), -- Opposite of reflective
+    conscientiousness INTEGER CHECK(conscientiousness >= 0 AND conscientiousness <= 100), -- Legacy/future use
+    agreeableness INTEGER CHECK(agreeableness >= 0 AND agreeableness <= 100), -- Legacy/future use
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES USER(user_id) ON DELETE CASCADE
 );
 
@@ -89,7 +100,7 @@ CREATE INDEX IF NOT EXISTS idx_traits_user ON TRAITS(user_id);
 CREATE INDEX IF NOT EXISTS idx_track_artist_track ON TRACK_ARTIST(track_id);
 CREATE INDEX IF NOT EXISTS idx_track_artist_artist ON TRACK_ARTIST(artist_id);
 
--- ==================== TRANSACTION DEMO TABLE ====================
+-- ==================== TRANSACTION DEMO TABLE this is from the phase 3 example ====================
 -- Bank Accounts table for transaction processing demonstration
 CREATE TABLE IF NOT EXISTS BankAccounts (
     account_id INTEGER PRIMARY KEY,
@@ -101,9 +112,9 @@ CREATE TABLE IF NOT EXISTS BankAccounts (
 
 -- Seed data for transaction demo
 INSERT OR IGNORE INTO BankAccounts (account_id, account_name, balance) VALUES 
-    (1, 'Alice', 500.00),
-    (2, 'Bob', 300.00),
-    (3, 'Charlie', 150.00);
+    (1, 'Primitivo', 500.00),
+    (2, 'Emma', 300.00),
+    (3, 'Fernando', 150.00);
 
 -- Transaction history log
 CREATE TABLE IF NOT EXISTS TransactionLog (

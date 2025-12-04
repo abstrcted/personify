@@ -1,71 +1,141 @@
 /* Overview Page Styles */
-.overview-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem;
+.overview-page {
+  width: 100vw;
+  max-width: 100%;
+  margin: 0;
+  margin-left: -280px;
+  padding: 2rem 4rem 2rem calc(280px + 4rem);
+  overflow-x: hidden;
 }
 
-.overview-header {
-  margin-bottom: 2rem;
+@media (max-width: 768px) {
+  .overview-page {
+    margin-left: 0;
+    padding: 2rem;
+  }
+}
+
+.page-header {
+  margin-bottom: 2.5rem;
   text-align: center;
 }
 
-.overview-header h1 {
+.page-header h1 {
   color: #1db954;
   margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  font-size: 2.5rem;
 }
 
-.overview-description {
-  color: #b3b3b3;
-  font-size: 1rem;
+.page-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.overview-stats {
+  margin-bottom: 3rem;
+}
+
+.section-title {
+  color: #333;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
+  width: 100%;
 }
 
 .stat-card {
-  background: #282828;
+  background: rgba(29, 185, 84, 0.05);
+  border: 1px solid rgba(29, 185, 84, 0.15);
   padding: 1.5rem;
-  border-radius: 8px;
-  text-align: center;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
   transition: all 0.3s ease;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .stat-card:hover {
-  background: #333;
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  background: rgba(29, 185, 84, 0.08);
+  border-color: rgba(29, 185, 84, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(29, 185, 84, 0.15);
 }
 
 .stat-icon {
-  color: #1db954;
-  margin-bottom: 0.5rem;
+  flex-shrink: 0;
 }
 
-.stat-label {
-  color: #b3b3b3;
-  font-size: 0.85rem;
-  margin-bottom: 0.5rem;
+.stat-icon.energy {
+  color: #ff6b6b;
+}
+
+.stat-icon.danceability {
+  color: #1db954;
+}
+
+.stat-icon.valence {
+  color: #ffd700;
+}
+
+.stat-icon.acousticness {
+  color: #4a9eff;
+}
+
+.stat-icon.instrumentalness {
+  color: #9b59b6;
+}
+
+.stat-icon.speechiness {
+  color: #ff8c00;
+}
+
+.stat-icon.tempo {
+  color: #e74c3c;
+}
+
+.stat-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.stat-content h3 {
+  color: #333;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  word-wrap: break-word;
+  line-height: 1.2;
 }
 
 .stat-value {
-  color: #fff;
-  font-size: 1.8rem;
+  color: #1db954;
+  font-size: 1.75rem;
   font-weight: 700;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.stat-label {
+  color: #999;
+  font-size: 0.8rem;
+  margin: 0;
+  word-wrap: break-word;
+  line-height: 1.3;
 }
 
 .liked-songs-section {
-  margin-top: 2rem;
+  margin-top: 3rem;
 }
 
 .section-header {
@@ -76,28 +146,32 @@
 }
 
 .section-header h2 {
-  color: #fff;
-  font-size: 1.5rem;
+  color: #333;
+  font-size: 1.8rem;
+  font-weight: 600;
 }
 
 .songs-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 1.5rem;
+  width: 100%;
 }
 
 .song-card {
-  background: #282828;
-  border-radius: 8px;
+  background: rgba(29, 185, 84, 0.03);
+  border: 1px solid rgba(29, 185, 84, 0.1);
+  border-radius: 12px;
   padding: 1.5rem;
   position: relative;
   transition: all 0.3s ease;
 }
 
 .song-card:hover {
-  background: #333;
+  background: rgba(29, 185, 84, 0.05);
+  border-color: rgba(29, 185, 84, 0.2);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(29, 185, 84, 0.1);
 }
 
 .song-header {
@@ -105,23 +179,39 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 1rem;
+  min-width: 0;
+}
+
+.song-info {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .song-info h3 {
-  color: #fff;
+  color: #333;
   font-size: 1.1rem;
   margin-bottom: 0.25rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .song-artist {
-  color: #b3b3b3;
+  color: #666;
   font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .remove-btn {
   background: transparent;
   border: none;
-  color: #b3b3b3;
+  color: #999;
   cursor: pointer;
   padding: 0.25rem;
   transition: color 0.3s ease;
@@ -145,7 +235,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #b3b3b3;
+  color: #666;
   font-size: 0.85rem;
 }
 
@@ -159,26 +249,41 @@
 }
 
 .feature-value {
-  color: #fff;
+  color: #333;
   margin-left: auto;
+  font-weight: 600;
 }
 
-.loading {
+.loading-state {
   text-align: center;
   color: #1db954;
-  padding: 3rem;
+  padding: 4rem;
   font-size: 1.2rem;
 }
 
-.no-songs {
+.overview-empty {
   text-align: center;
-  color: #b3b3b3;
-  padding: 3rem;
-  background: #282828;
-  border-radius: 8px;
+  color: #666;
+  padding: 4rem 2rem;
+  background: rgba(29, 185, 84, 0.03);
+  border: 1px solid rgba(29, 185, 84, 0.1);
+  border-radius: 12px;
+  max-width: 600px;
+  margin: 2rem auto;
 }
 
-.no-songs p {
+.overview-empty svg {
+  color: #1db954;
+  margin-bottom: 1rem;
+}
+
+.overview-empty h2 {
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.overview-empty p {
+  color: #666;
   margin-bottom: 1rem;
   font-size: 1.1rem;
 }
@@ -187,9 +292,9 @@
   display: inline-block;
   padding: 0.75rem 1.5rem;
   background: #1db954;
-  color: #000;
+  color: #fff;
   text-decoration: none;
-  border-radius: 20px;
+  border-radius: 24px;
   font-weight: 600;
   transition: all 0.3s ease;
 }
@@ -206,4 +311,228 @@
   border-radius: 8px;
   text-align: center;
   margin-bottom: 2rem;
+}
+
+/* Track List Styles */
+.track-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.track-row {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.track-row:hover {
+  border-color: #1db954;
+  box-shadow: 0 4px 12px rgba(29, 185, 84, 0.1);
+  transform: translateY(-2px);
+}
+
+.track-row .remove-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.track-row .remove-btn:hover {
+  background: rgba(255, 68, 68, 0.1);
+  color: #ff4444;
+}
+
+.track-row-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.track-number {
+  color: #999;
+  font-size: 1.2rem;
+  font-weight: 600;
+  min-width: 30px;
+  text-align: center;
+  padding-top: 0.25rem;
+}
+
+.track-main-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.track-title {
+  color: #333 !important;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+}
+
+.overview-page .track-title,
+.track-row .track-title,
+.track-main-info .track-title {
+  color: #333 !important;
+}
+
+.track-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  color: #666 !important;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.track-meta * {
+  color: #666 !important;
+}
+
+.track-artist,
+.track-album,
+.track-tempo,
+.track-duration {
+  color: #666;
+}
+
+.meta-separator {
+  color: #999;
+}
+
+.track-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.feature-label {
+  color: #666;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.feature-bar-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.feature-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.feature-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.feature-bar-fill.energy {
+  background: linear-gradient(90deg, #ff6b6b, #ff4444);
+}
+
+.feature-bar-fill.danceability {
+  background: linear-gradient(90deg, #1db954, #1ed760);
+}
+
+.feature-bar-fill.valence {
+  background: linear-gradient(90deg, #ffd700, #ffed4e);
+}
+
+.feature-bar-fill.acousticness {
+  background: linear-gradient(90deg, #4a9eff, #6bb6ff);
+}
+
+.feature-bar-fill.instrumentalness {
+  background: linear-gradient(90deg, #9b59b6, #bb6bd9);
+}
+
+.feature-bar-fill.speechiness {
+  background: linear-gradient(90deg, #ff8c00, #ffa500);
+}
+
+.feature-value {
+  color: #333;
+  font-size: 0.85rem;
+  font-weight: 600;
+  min-width: 45px;
+  text-align: right;
+}
+
+@media (max-width: 1200px) {
+  .overview-page {
+    padding: 2rem 2.5rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .overview-page {
+    padding: 1.5rem;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .stat-card {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .stat-value {
+    font-size: 1.25rem;
+  }
+
+  .songs-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
 }

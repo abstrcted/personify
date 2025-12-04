@@ -42,11 +42,6 @@ const Sidebar = () => {
           <IconHome className="nav-icon" size={20} stroke={2} />
           <span className="nav-text">Home</span>
         </NavLink>
-        
-        <NavLink to="/overview" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-          <IconChartBar className="nav-icon" size={20} stroke={2} />
-          <span className="nav-text">Overview</span>
-        </NavLink>
 
         <NavLink to="/top-tracks" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
           <IconMusic className="nav-icon" size={20} stroke={2} />

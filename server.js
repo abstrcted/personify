@@ -50,6 +50,125 @@ app.post('/api/liked-songs/:userId', addLikedSong);
 app.get('/api/transaction/accounts', getAccounts);
 app.post('/api/transaction/transfer', transferFunds);
 
+// Personality Traits Routes
+app.get('/api/user-traits', async (req, res) => {
+  try {
+    // For now, using userId from query param or default to 1
+    // In production, get from authenticated session
+    const userId = req.query.userId || 1;
+    
+    const traits = db.prepare('SELECT * FROM TRAITS WHERE user_id = ?').get(userId);
+    
+    if (!traits) {
+      return res.status(404).json({ error: 'No traits found for this user' });
+    }
+    
+    res.json(traits);
+  } catch (error) {
+    console.error('Error fetching traits:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/calculate-traits', async (req, res) => {
+  try {
+    // For now, using userId from query param or default to 1
+    // In production, get from authenticated session
+    const userId = req.query.userId || 1;
+    
+    // Get audio feature averages and artist variety
+    const stats = db.prepare(`
+      SELECT 
+        ROUND(AVG(T.speechiness), 3) as avg_speechiness,
+        ROUND(AVG(T.valence), 3) as avg_valence,
+        ROUND(AVG(T.energy), 3) as avg_energy,
+        ROUND(AVG(T.danceability), 3) as avg_danceability,
+        ROUND(AVG(T.acousticness), 3) as avg_acousticness,
+        ROUND(AVG(T.instrumentalness), 3) as avg_instrumentalness,
+        COUNT(DISTINCT TA.artist_id) as unique_artists,
+        COUNT(*) as total_tracks
+      FROM TRACK T
+      JOIN USER_FAVORITES UF ON T.track_id = UF.track_id
+      LEFT JOIN TRACK_ARTIST TA ON T.track_id = TA.track_id
+      WHERE UF.user_id = ?
+        AND T.energy IS NOT NULL
+        AND T.valence IS NOT NULL
+    `).get(userId);
+
+    if (!stats || stats.total_tracks === 0) {
+      return res.status(400).json({ 
+        error: 'Not enough track data to calculate traits. Please add some liked songs first.' 
+      });
+    }
+
+    // Calculate traits (0-100 scale)
+    // Reflective: Based on speechiness (inverted - lower speechiness = more reflective)
+    const reflective = Math.round((1 - (stats.avg_speechiness || 0)) * 100);
+    const moodiness = Math.round((1 - stats.avg_valence) * 100);
+    const openness = Math.min(100, Math.round((stats.unique_artists / stats.total_tracks) * 150));
+    const chaoticness = Math.round(
+      (stats.avg_energy * 0.4 + stats.avg_danceability * 0.4 + stats.avg_valence * 0.2) * 100
+    );
+    const extraversion = Math.round((stats.avg_valence * 0.6 + stats.avg_danceability * 0.4) * 100);
+    const whimsy = Math.round(Math.max(stats.avg_acousticness, stats.avg_instrumentalness) * 100);
+
+    // Calculate opposite traits
+    const traits = {
+      reflective,
+      moodiness,
+      openness,
+      chaoticness,
+      extraversion,
+      whimsy,
+      balance: 100 - openness,
+      calmness: 100 - chaoticness,
+      groundedness: 100 - whimsy,
+      introspection: 100 - extraversion,
+      joyfulness: 100 - moodiness,
+      conversational: 100 - reflective,
+      conscientiousness: 50,
+      agreeableness: 50
+    };
+
+    // Save to database
+    db.prepare(`
+      INSERT INTO TRAITS (
+        user_id, reflective, moodiness, openness, chaoticness, extraversion, whimsy,
+        balance, calmness, groundedness, introspection, joyfulness, conversational,
+        conscientiousness, agreeableness
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(user_id) DO UPDATE SET
+        reflective = excluded.reflective,
+        moodiness = excluded.moodiness,
+        openness = excluded.openness,
+        chaoticness = excluded.chaoticness,
+        extraversion = excluded.extraversion,
+        whimsy = excluded.whimsy,
+        balance = excluded.balance,
+        calmness = excluded.calmness,
+        groundedness = excluded.groundedness,
+        introspection = excluded.introspection,
+        joyfulness = excluded.joyfulness,
+        conversational = excluded.conversational,
+        conscientiousness = excluded.conscientiousness,
+        agreeableness = excluded.agreeableness
+    `).run(
+      userId, traits.reflective, traits.moodiness, traits.openness, traits.chaoticness,
+      traits.extraversion, traits.whimsy, traits.balance, traits.calmness,
+      traits.groundedness, traits.introspection, traits.joyfulness, traits.conversational,
+      traits.conscientiousness, traits.agreeableness
+    );
+
+    // Return the calculated traits with updated_at
+    const savedTraits = db.prepare('SELECT * FROM TRAITS WHERE user_id = ?').get(userId);
+    res.json(savedTraits);
+  } catch (error) {
+    console.error('Error calculating traits:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Initialize Spotify API
 const spotifyApi = new SpotifyWebApi({
   clientId: process.env.SPOTIFY_CLIENT_ID,
@@ -1448,7 +1567,7 @@ app.get('/api/liked-songs/:userId', async (req, res) => {
         T.duration_ms,
         T.popularity,
         AL.album_name,
-        GROUP_CONCAT(AR.artist_name, ', ') as artists,
+        GROUP_CONCAT(AR.artist_name, ', ') as artist_name,
         UF.added_at
       FROM USER_FAVORITES UF
       JOIN TRACK T ON UF.track_id = T.track_id
@@ -1505,10 +1624,67 @@ app.post('/api/liked-songs/:userId', async (req, res) => {
     const dbModule = await import('./database/db.js');
     const { dbHelpers } = await import('./database/db.js');
     
-    // Check if track exists
-    const track = dbModule.default.prepare('SELECT track_id FROM TRACK WHERE track_id = ?').get(trackId);
+    // Check if track exists and get its spotify_id and duration
+    const track = dbModule.default.prepare(
+      'SELECT track_id, track_name, spotify_id, duration_ms FROM TRACK WHERE track_id = ?'
+    ).get(trackId);
+    
     if (!track) {
       return res.status(404).json({ success: false, error: 'Track not found' });
+    }
+
+    // If duration is missing and we have a valid Spotify ID, fetch it from Spotify API
+    if (!track.duration_ms && track.spotify_id && !track.spotify_id.startsWith('csv-')) {
+      try {
+        // Get client credentials token if needed
+        if (!spotifyApi.getAccessToken()) {
+          const data = await spotifyApi.clientCredentialsGrant();
+          spotifyApi.setAccessToken(data.body['access_token']);
+        }
+
+        // Fetch track details from Spotify
+        const spotifyTrack = await spotifyApi.getTrack(track.spotify_id);
+        const duration = spotifyTrack.body.duration_ms;
+
+        // Update the track with the duration
+        dbModule.default.prepare(
+          'UPDATE TRACK SET duration_ms = ? WHERE track_id = ?'
+        ).run(duration, trackId);
+
+        console.log(`✅ Updated duration for "${track.track_name}": ${Math.round(duration/1000)}s`);
+      } catch (spotifyError) {
+        console.error(`⚠️ Could not fetch duration from Spotify for track ${trackId}:`, spotifyError.message);
+        // Continue anyway - don't fail the like operation
+      }
+    }
+    // If it's a CSV track without Spotify ID, try searching for it
+    else if (!track.duration_ms && track.spotify_id?.startsWith('csv-')) {
+      try {
+        // Get client credentials token if needed
+        if (!spotifyApi.getAccessToken()) {
+          const data = await spotifyApi.clientCredentialsGrant();
+          spotifyApi.setAccessToken(data.body['access_token']);
+        }
+
+        // Search for the track
+        const searchResult = await spotifyApi.searchTracks(track.track_name, { limit: 1 });
+        
+        if (searchResult.body.tracks.items.length > 0) {
+          const spotifyTrack = searchResult.body.tracks.items[0];
+          const duration = spotifyTrack.duration_ms;
+          const newSpotifyId = spotifyTrack.id;
+
+          // Update the track with real Spotify data
+          dbModule.default.prepare(
+            'UPDATE TRACK SET duration_ms = ?, spotify_id = ? WHERE track_id = ?'
+          ).run(duration, newSpotifyId, trackId);
+
+          console.log(`✅ Updated "${track.track_name}" with Spotify data: ${Math.round(duration/1000)}s`);
+        }
+      } catch (spotifyError) {
+        console.error(`⚠️ Could not fetch track from Spotify for "${track.track_name}":`, spotifyError.message);
+        // Continue anyway - don't fail the like operation
+      }
     }
 
     // Add to favorites

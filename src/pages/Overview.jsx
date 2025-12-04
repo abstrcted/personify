@@ -153,6 +153,13 @@ const Overview = () => {
         <div className="track-list">
           {likedSongs.map((song, index) => (
             <div key={song.track_id} className="track-row">
+              <button 
+                className="remove-btn"
+                onClick={() => removeSong(song.track_id)}
+                title="Remove from Liked Songs"
+              >
+                <IconX size={20} />
+              </button>
               <div className="track-row-header">
                 <div className="track-number">{index + 1}</div>
                 <div className="track-main-info">
@@ -167,15 +174,14 @@ const Overview = () => {
                         <span className="track-tempo">{Math.round(song.tempo)} BPM</span>
                       </>
                     )}
+                    {song.duration_ms && (
+                      <>
+                        <span className="meta-separator">•</span>
+                        <span className="track-duration">{Math.floor(song.duration_ms / 60000)}:{String(Math.floor((song.duration_ms % 60000) / 1000)).padStart(2, '0')}</span>
+                      </>
+                    )}
                   </div>
                 </div>
-                <button 
-                  className="remove-btn"
-                  onClick={() => removeSong(song.track_id)}
-                  title="Remove from Liked Songs"
-                >
-                  <IconX size={20} />
-                </button>
               </div>
               
               <div className="track-features-grid">

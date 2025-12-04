@@ -1,4 +1,5 @@
 // Database connection and helper functions for Personify
+/* eslint-env node */
 import Database from 'better-sqlite3';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -36,17 +37,121 @@ export const dbHelpers = {
   },
 
   setUserTraits: (userId, traits) => {
-    const { extraversion, openness, conscientiousness, agreeableness, calmness } = traits;
+    const {
+      patience, moodiness, openness, chaoticness, extraversion, whimsy,
+      balance, calmness, groundedness, introspection, joyfulness, hustle,
+      conscientiousness, agreeableness
+    } = traits;
+    
     return db.prepare(`
-      INSERT INTO TRAITS (user_id, extraversion, openness, conscientiousness, agreeableness, calmness)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO TRAITS (
+        user_id, patience, moodiness, openness, chaoticness, extraversion, whimsy,
+        balance, calmness, groundedness, introspection, joyfulness, hustle,
+        conscientiousness, agreeableness
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(user_id) DO UPDATE SET
-        extraversion = excluded.extraversion,
+        patience = excluded.patience,
+        moodiness = excluded.moodiness,
         openness = excluded.openness,
+        chaoticness = excluded.chaoticness,
+        extraversion = excluded.extraversion,
+        whimsy = excluded.whimsy,
+        balance = excluded.balance,
+        calmness = excluded.calmness,
+        groundedness = excluded.groundedness,
+        introspection = excluded.introspection,
+        joyfulness = excluded.joyfulness,
+        hustle = excluded.hustle,
         conscientiousness = excluded.conscientiousness,
-        agreeableness = excluded.agreeableness,
-        calmness = excluded.calmness
-    `).run(userId, extraversion, openness, conscientiousness, agreeableness, calmness);
+        agreeableness = excluded.agreeableness
+    `).run(
+      userId, patience, moodiness, openness, chaoticness, extraversion, whimsy,
+      balance, calmness, groundedness, introspection, joyfulness, hustle,
+      conscientiousness, agreeableness
+    );
+  },
+
+  // Calculate all personality traits from user's liked songs
+  calculateUserTraits: (userId) => {
+    try {
+      // Get audio feature averages and track data
+      const stats = db.prepare(`
+        SELECT 
+          ROUND(AVG(T.duration_ms), 0) as avg_duration_ms,
+          ROUND(AVG(T.valence), 3) as avg_valence,
+          ROUND(AVG(T.energy), 3) as avg_energy,
+          ROUND(AVG(T.danceability), 3) as avg_danceability,
+          ROUND(AVG(T.acousticness), 3) as avg_acousticness,
+          ROUND(AVG(T.instrumentalness), 3) as avg_instrumentalness,
+          COUNT(DISTINCT TA.artist_id) as unique_artists,
+          COUNT(*) as total_tracks
+        FROM TRACK T
+        JOIN USER_FAVORITES UF ON T.track_id = UF.track_id
+        LEFT JOIN TRACK_ARTIST TA ON T.track_id = TA.track_id
+        WHERE UF.user_id = ?
+          AND T.energy IS NOT NULL
+          AND T.valence IS NOT NULL
+      `).get(userId);
+
+      if (!stats || stats.total_tracks === 0) {
+        return null;
+      }
+
+      // Calculate traits (0-100 scale)
+      // Patience: longer songs = more patience (normalize avg duration to 0-100)
+      // Typical song: 180,000ms (3min) to 300,000ms (5min)
+      const patience = Math.min(100, Math.max(0, 
+        Math.round(((stats.avg_duration_ms - 120000) / 240000) * 100)
+      ));
+
+      // Moodiness: lower valence = higher moodiness (inverse relationship)
+      const moodiness = Math.round((1 - stats.avg_valence) * 100);
+
+      // Openness: artist variety relative to track count
+      const openness = Math.min(100, Math.round((stats.unique_artists / stats.total_tracks) * 150));
+
+      // Chaoticness: combination of high energy, danceability, and valence variance
+      const chaoticness = Math.round(
+        (stats.avg_energy * 0.4 + stats.avg_danceability * 0.4 + stats.avg_valence * 0.2) * 100
+      );
+
+      // Extraversion: high valence and danceability
+      const extraversion = Math.round((stats.avg_valence * 0.6 + stats.avg_danceability * 0.4) * 100);
+
+      // Whimsy: higher acousticness and instrumentalness
+      const whimsy = Math.round(
+        Math.max(stats.avg_acousticness, stats.avg_instrumentalness) * 100
+      );
+
+      // Calculate opposite traits
+      const balance = 100 - openness;
+      const calmness = 100 - chaoticness;
+      const groundedness = 100 - whimsy;
+      const introspection = 100 - extraversion;
+      const joyfulness = 100 - moodiness;
+      const hustle = 100 - patience;
+
+      return {
+        patience,
+        moodiness,
+        openness,
+        chaoticness,
+        extraversion,
+        whimsy,
+        balance,
+        calmness,
+        groundedness,
+        introspection,
+        joyfulness,
+        hustle,
+        conscientiousness: 50, // Placeholder for future calculation
+        agreeableness: 50 // Placeholder for future calculation
+      };
+    } catch (error) {
+      console.error('Error calculating traits:', error);
+      return null;
+    }
   },
 
   // Artist operations

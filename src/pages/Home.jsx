@@ -14,12 +14,15 @@ const Home = () => {
   const [sortBy, setSortBy] = useState('track_name');
   const [searchMode, setSearchMode] = useState('browse'); // 'browse', 'search', or 'random'
   const [likedSongs, setLikedSongs] = useState(new Set());
+  const [likedSongsDetails, setLikedSongsDetails] = useState([]);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+  const [likedSongsSearchQuery, setLikedSongsSearchQuery] = useState('');
   const limit = 50;
   const userId = 1; // Hardcoded for now - in production, get from auth context
 
   // NOTE: track click handler removed (unused) to satisfy lint rules
 
-  // Fetch liked songs
+  // Fetch liked songs with full details
   const fetchLikedSongs = useCallback(async () => {
     try {
       const response = await fetch(`http://127.0.0.1:3001/api/liked-songs/${userId}`);
@@ -27,6 +30,7 @@ const Home = () => {
       if (data.success) {
         const likedIds = new Set(data.songs.map(song => song.track_id));
         setLikedSongs(likedIds);
+        setLikedSongsDetails(data.songs);
       }
     } catch (error) {
       console.error('Error fetching liked songs:', error);
@@ -44,11 +48,6 @@ const Home = () => {
         await fetch(`http://127.0.0.1:3001/api/liked-songs/${userId}/${trackId}`, {
           method: 'DELETE'
         });
-        setLikedSongs(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(trackId);
-          return newSet;
-        });
       } else {
         // Like
         await fetch(`http://127.0.0.1:3001/api/liked-songs/${userId}`, {
@@ -56,11 +55,33 @@ const Home = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ trackId })
         });
-        setLikedSongs(prev => new Set([...prev, trackId]));
       }
+      // Refresh liked songs list
+      fetchLikedSongs();
     } catch (error) {
       console.error('Error toggling like:', error);
     }
+  };
+
+  const formatDuration = (ms) => {
+    if (!ms) return 'N/A';
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  // Filter liked songs based on search query
+  const filteredLikedSongs = likedSongsDetails.filter(song => {
+    if (!likedSongsSearchQuery.trim()) return true;
+    const query = likedSongsSearchQuery.toLowerCase();
+    return (
+      song.track_name?.toLowerCase().includes(query) ||
+      song.artist_name?.toLowerCase().includes(query)
+    );
+  });
+
+  const clearLikedSongsSearch = () => {
+    setLikedSongsSearchQuery('');
   };
 
   // Fetch database stats
@@ -173,7 +194,8 @@ const Home = () => {
   }
 
   return (
-    <div className="home-dashboard">
+    <div className="home-container-with-sidebar">
+      <div className="home-dashboard">
       <header className="page-header">
         <h1>Welcome back, {user?.display_name}! 👋</h1>
         <p className="page-subtitle">Browse {dbStats?.total_tracks?.toLocaleString() || '...'} tracks in our database</p>
@@ -409,6 +431,78 @@ const Home = () => {
           </>
         )}
       </div>
+      </div>
+
+      {/* Liked Songs Sidebar */}
+      {!sidebarCollapsed && (
+        <div className="liked-sidebar">
+          <h2>Liked Songs</h2>
+          
+          {/* Search Bar */}
+          <div className="liked-search-container">
+            <input
+              type="text"
+              placeholder="Search liked songs..."
+              value={likedSongsSearchQuery}
+              onChange={(e) => setLikedSongsSearchQuery(e.target.value)}
+              className="liked-search-input"
+            />
+            {likedSongsSearchQuery && (
+              <button 
+                className="clear-search-btn"
+                onClick={clearLikedSongsSearch}
+                title="Clear search"
+              >
+                ×
+              </button>
+            )}
+          </div>
+          
+          <div className="liked-songs-list">
+          {filteredLikedSongs.length === 0 ? (
+            <div className="empty-state">
+              {likedSongsSearchQuery ? (
+                <>
+                  <p>No songs found</p>
+                  <p className="empty-hint">Try a different search term</p>
+                </>
+              ) : (
+                <>
+                  <p>No liked songs yet</p>
+                  <p className="empty-hint">Heart a track to add it here!</p>
+                </>
+              )}
+            </div>
+          ) : (
+            filteredLikedSongs.map((song) => (
+              <div key={song.track_id} className="liked-song-item">
+                <div className="liked-song-info">
+                  <h4>{song.track_name}</h4>
+                  <p>{song.artist_name}</p>
+                </div>
+
+                <button 
+                  className="remove-liked-btn"
+                  onClick={(e) => toggleLike(song.track_id, e)}
+                  title="Unlike this song"
+                >
+                  ×
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+        </div>
+      )}
+
+      {/* Toggle Button */}
+      <button 
+        className="sidebar-toggle-btn"
+        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+        title={sidebarCollapsed ? 'Show Liked Songs' : 'Hide Liked Songs'}
+      >
+        {sidebarCollapsed ? 'Liked Songs' : '×'}
+      </button>
     </div>
   );
 };

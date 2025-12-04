@@ -261,6 +261,109 @@ export const getUserAudioFeatureAverages = (userId) => {
   }
 };
 
+// Calculate and save user personality traits
+export const calculateAndSaveTraits = (userId) => {
+  try {
+    // Get audio feature averages and artist variety
+    const stats = db.prepare(`
+      SELECT 
+        ROUND(AVG(T.duration_ms), 0) as avg_duration_ms,
+        ROUND(AVG(T.valence), 3) as avg_valence,
+        ROUND(AVG(T.energy), 3) as avg_energy,
+        ROUND(AVG(T.danceability), 3) as avg_danceability,
+        ROUND(AVG(T.acousticness), 3) as avg_acousticness,
+        ROUND(AVG(T.instrumentalness), 3) as avg_instrumentalness,
+        COUNT(DISTINCT TA.artist_id) as unique_artists,
+        COUNT(*) as total_tracks
+      FROM TRACK T
+      JOIN USER_FAVORITES UF ON T.track_id = UF.track_id
+      LEFT JOIN TRACK_ARTIST TA ON T.track_id = TA.track_id
+      WHERE UF.user_id = ?
+        AND T.energy IS NOT NULL
+        AND T.valence IS NOT NULL
+    `).get(userId);
+
+    if (!stats || stats.total_tracks === 0) {
+      throw new Error('Not enough track data to calculate traits');
+    }
+
+    // Calculate traits (0-100 scale)
+    const patience = Math.min(100, Math.max(0, 
+      Math.round(((stats.avg_duration_ms - 120000) / 240000) * 100)
+    ));
+    const moodiness = Math.round((1 - stats.avg_valence) * 100);
+    const openness = Math.min(100, Math.round((stats.unique_artists / stats.total_tracks) * 150));
+    const chaoticness = Math.round(
+      (stats.avg_energy * 0.4 + stats.avg_danceability * 0.4 + stats.avg_valence * 0.2) * 100
+    );
+    const extraversion = Math.round((stats.avg_valence * 0.6 + stats.avg_danceability * 0.4) * 100);
+    const whimsy = Math.round(Math.max(stats.avg_acousticness, stats.avg_instrumentalness) * 100);
+
+    // Calculate opposite traits
+    const traits = {
+      patience,
+      moodiness,
+      openness,
+      chaoticness,
+      extraversion,
+      whimsy,
+      balance: 100 - openness,
+      calmness: 100 - chaoticness,
+      groundedness: 100 - whimsy,
+      introspection: 100 - extraversion,
+      joyfulness: 100 - moodiness,
+      hustle: 100 - patience,
+      conscientiousness: 50,
+      agreeableness: 50
+    };
+
+    // Save to database
+    db.prepare(`
+      INSERT INTO TRAITS (
+        user_id, patience, moodiness, openness, chaoticness, extraversion, whimsy,
+        balance, calmness, groundedness, introspection, joyfulness, hustle,
+        conscientiousness, agreeableness
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(user_id) DO UPDATE SET
+        patience = excluded.patience,
+        moodiness = excluded.moodiness,
+        openness = excluded.openness,
+        chaoticness = excluded.chaoticness,
+        extraversion = excluded.extraversion,
+        whimsy = excluded.whimsy,
+        balance = excluded.balance,
+        calmness = excluded.calmness,
+        groundedness = excluded.groundedness,
+        introspection = excluded.introspection,
+        joyfulness = excluded.joyfulness,
+        hustle = excluded.hustle,
+        conscientiousness = excluded.conscientiousness,
+        agreeableness = excluded.agreeableness
+    `).run(
+      userId, traits.patience, traits.moodiness, traits.openness, traits.chaoticness,
+      traits.extraversion, traits.whimsy, traits.balance, traits.calmness,
+      traits.groundedness, traits.introspection, traits.joyfulness, traits.hustle,
+      traits.conscientiousness, traits.agreeableness
+    );
+
+    return traits;
+  } catch (error) {
+    console.error('Error calculating and saving traits:', error);
+    throw error;
+  }
+};
+
+// Get user traits
+export const getUserTraits = (userId) => {
+  try {
+    return db.prepare('SELECT * FROM TRAITS WHERE user_id = ?').get(userId);
+  } catch (error) {
+    console.error('Error getting user traits:', error);
+    throw error;
+  }
+};
+
 export default {
   saveUser,
   saveArtist,
@@ -270,5 +373,7 @@ export default {
   addToFavorites,
   saveCompleteTrack,
   getUserTracks,
-  getUserAudioFeatureAverages
+  getUserAudioFeatureAverages,
+  calculateAndSaveTraits,
+  getUserTraits
 };

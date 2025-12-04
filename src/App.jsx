@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { SpotifyAuthProvider } from './contexts/SpotifyAuthContext';
 import Dashboard from './pages/Dashboard';
 import Home from './pages/Home';
-import Overview from './pages/Overview';
 import ListeningHistory from './pages/ListeningHistory';
 import TopTracksPage from './pages/TopTracksPage';
 import TopArtists from './pages/TopArtists';
@@ -25,7 +24,6 @@ function App() {
           <Route path="/callback" element={<Callback />} />
           <Route path="/" element={<Dashboard />}>
             <Route index element={<Home />} />
-            <Route path="overview" element={<Overview />} />
             <Route path="listening-history" element={<ListeningHistory />} />
             <Route path="top-tracks" element={<TopTracksPage />} />
             <Route path="top-artists" element={<TopArtists />} />

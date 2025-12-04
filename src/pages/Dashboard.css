@@ -7,39 +7,16 @@
 .dashboard-content {
   flex: 1;
   margin-left: 280px;
-  padding: 2rem;
+  padding: 0;
   transition: margin-left 0.3s ease;
+  width: calc(100vw - 280px);
+  max-width: none;
+  overflow-x: hidden;
 }
 
 @media (max-width: 768px) {
   .dashboard-content {
     margin-left: 0;
-    padding: 1rem;
+    padding: 0;
   }
-}
-
-/* Centered inner content wrapper used by pages to limit content width while
-   allowing the dashboard to expand. Adjust `max-width` to taste. */
-/* removed .content-inner wrapper (reverted) */
-.dashboard-content .content-inner,
-.content-inner {
-  max-width: 1400px;
-  margin: 0 auto;
-  width: 100%;
-  padding-left: 0.25rem;
-  padding-right: 0.25rem;
-}
-
-/* Alternative safe centering without changing JSX: center the main
-   sections inside `.home-dashboard` so no wrapper is required. */
-.home-dashboard > .page-header,
-.home-dashboard > .stats-grid,
-.home-dashboard > .browse-controls,
-.home-track-browser {
-  max-width: 1400px;
-  margin-left: auto;
-  margin-right: auto;
-  width: 100%;
-  padding-left: 0.25rem;
-  padding-right: 0.25rem;
 }
