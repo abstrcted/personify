@@ -143,8 +143,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   line-height: 1.3;
 }
 
@@ -240,4 +241,13 @@
 
 .features-collapse .audio-features-card .card-body {
   padding: 1rem;
+}
+
+/* Login Prompt Styles */
+.top-tracks-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  padding: 2rem;
 }

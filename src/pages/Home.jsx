@@ -1,11 +1,10 @@
 import { useSpotifyAuth } from '../contexts/SpotifyAuthContext';
-import SpotifyLogin from '../components/SpotifyLogin';
-import { IconMusic, IconSparkles, IconMicrophone, IconUsers, IconHeart, IconHeartFilled } from '@tabler/icons-react';
+import { IconMusic, IconSparkles, IconMicrophone, IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { useState, useEffect, useCallback } from 'react';
 import './Home.css';
 
 const Home = () => {
-  const { isAuthenticated, user } = useSpotifyAuth();
+  const { isAuthenticated, user, login } = useSpotifyAuth();
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -61,13 +60,6 @@ const Home = () => {
     } catch (error) {
       console.error('Error toggling like:', error);
     }
-  };
-
-  const formatDuration = (ms) => {
-    if (!ms) return 'N/A';
-    const minutes = Math.floor(ms / 60000);
-    const seconds = Math.floor((ms % 60000) / 1000);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   // Filter liked songs based on search query
@@ -178,16 +170,21 @@ const Home = () => {
               <h3>Personality Insights</h3>
               <p>See how your music taste reflects your personality traits</p>
             </div>
-            <div className="feature-card">
-              <span className="feature-icon">
-                <IconUsers size={48} stroke={1.5} />
-              </span>
-              <h3>Find Your Match</h3>
-              <p>Connect with users who share similar musical DNA</p>
+            <div className="feature-card feature-card-spotify">
+              <h3>Connect Your Spotify Account</h3>
+              <p>Get started with your personalized music analysis</p>
+              <button onClick={login} className="btn btn-spotify">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                </svg>
+                Connect with Spotify
+              </button>
             </div>
           </div>
 
-          <SpotifyLogin />
+          <div className="welcome-footer">
+            <p className="welcome-stats">Explore 1.2 million songs and analyze your music listening traits</p>
+          </div>
         </div>
       </div>
     );

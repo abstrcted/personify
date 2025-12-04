@@ -1,3 +1,108 @@
+/* Welcome Screen Styles */
+.home-welcome {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f5f3ff 0%, #faf5ff 100%);
+}
+
+.welcome-content {
+  max-width: 1000px;
+  text-align: center;
+}
+
+.welcome-title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #1f1f1f;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.welcome-subtitle {
+  font-size: 1.25rem;
+  color: #6b7280;
+  margin-bottom: 3rem;
+}
+
+.welcome-features {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+
+.home-welcome .feature-card {
+  background: white !important;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(139, 92, 246, 0.1);
+  flex: 0 0 320px;
+  min-width: 280px;
+  max-width: 320px;
+  height: fit-content;
+  min-height: 340px;
+}
+
+.home-welcome .feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.home-welcome .feature-card-spotify {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.home-welcome .feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+  color: white;
+  border-radius: 20px;
+  margin-bottom: 1.5rem;
+}
+
+.home-welcome .feature-card h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f1f1f !important;
+  margin-bottom: 0.75rem;
+}
+
+.home-welcome .feature-card p {
+  font-size: 1rem;
+  color: #6b7280 !important;
+  line-height: 1.6;
+}
+
+.welcome-footer {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.welcome-stats {
+  font-size: 1.125rem;
+  color: #8b5cf6;
+  font-weight: 500;
+  margin: 0;
+}
+
+
 /* Container with Sidebar Layout */
 .home-container-with-sidebar {
   display: flex;
@@ -390,42 +495,42 @@
 
 .track-meta {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 0.5rem;
   font-size: 0.875rem;
   color: #6b7280 !important;
-  overflow: hidden;
-  white-space: nowrap;
+  flex-wrap: nowrap;
+  line-height: 1.5;
 }
 
 .track-meta * {
   color: inherit !important;
+  line-height: inherit;
 }
 
 .track-artist {
   color: #8b5cf6;
   font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 300px;
+  flex-shrink: 0;
 }
 
 .track-album {
   color: #9ca3af;
+  flex-shrink: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 300px;
 }
 
 .track-tempo {
   color: #8b5cf6;
   font-weight: 600;
+  flex-shrink: 0;
 }
 
 .meta-separator {
   color: #d1d5db;
+  flex-shrink: 0;
 }
 
 /* Features Grid (horizontal stats layout uses this too) */
@@ -673,5 +778,4 @@
   .track-row {
     padding: 1rem;
   }
-} }
 }

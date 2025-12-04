@@ -2,11 +2,9 @@ import { NavLink } from 'react-router-dom';
 import { useSpotifyAuth } from '../contexts/SpotifyAuthContext';
 import { 
   IconHome, 
-  IconChartBar, 
   IconMusic, 
   IconMicrophone, 
   IconSparkles,
-  IconSettings,
   IconLogout,
   IconDatabase
 } from '@tabler/icons-react';
@@ -95,11 +93,6 @@ const Sidebar = () => {
         </NavLink>
 
         <div className="nav-divider"></div>
-
-        <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-          <IconSettings className="nav-icon" size={20} stroke={2} />
-          <span className="nav-text">Settings</span>
-        </NavLink>
       </nav>
 
       {user && (

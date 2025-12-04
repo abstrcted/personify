@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSpotifyAuth } from '../contexts/SpotifyAuthContext';
 import SpotifyLogin from '../components/SpotifyLogin';
-import { IconMicrophone, IconMusic, IconChevronDown, IconChevronUp } from '@tabler/icons-react';
+import { IconMusic, IconChevronDown, IconChevronUp } from '@tabler/icons-react';
 import './TopArtists.css';
 
 const TopArtists = () => {
@@ -13,14 +13,7 @@ const TopArtists = () => {
   const [artistTracks, setArtistTracks] = useState({});
   const [loadingTracks, setLoadingTracks] = useState({});
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    if (isAuthenticated && accessToken) {
-      fetchTopArtists();
-    }
-  }, [isAuthenticated, accessToken, timeRange]);
-
-  const fetchTopArtists = async () => {
+  const fetchTopArtists = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(
@@ -35,7 +28,13 @@ const TopArtists = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [accessToken, timeRange]);
+
+  useEffect(() => {
+    if (isAuthenticated && accessToken) {
+      fetchTopArtists();
+    }
+  }, [isAuthenticated, accessToken, timeRange, fetchTopArtists]);
 
   const fetchArtistTopTracks = async (artistId) => {
     if (artistTracks[artistId]) {
@@ -66,12 +65,7 @@ const TopArtists = () => {
   if (!isAuthenticated) {
     return (
       <div className="top-artists-login">
-        <div className="login-prompt">
-          <IconMicrophone size={64} stroke={1.5} />
-          <h2>Connect Your Spotify</h2>
-          <p>Log in to see your top artists and their most popular tracks</p>
-          <SpotifyLogin />
-        </div>
+        <SpotifyLogin />
       </div>
     );
   }
@@ -168,7 +162,7 @@ const TopArtists = () => {
 
                 <div className="artist-top-tracks">
                   <div className="tracks-list">
-                    {artistTracks[expandedArtist].slice(0, 10).map((track, trackIndex) => (
+                    {artistTracks[expandedArtist].slice(0, 10).map((track) => (
                       <div key={track.id} className="track-item">
                         {track.album.images && track.album.images[1] && (
                           <img
@@ -203,7 +197,6 @@ const TopArtists = () => {
 
       {!loading && artists.length === 0 && (
         <div className="empty-state">
-          <IconMicrophone size={64} stroke={1.5} />
           <h3>No Artists Found</h3>
           <p>Start listening to music on Spotify to see your top artists here!</p>
         </div>

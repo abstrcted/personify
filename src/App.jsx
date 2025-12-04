@@ -7,7 +7,6 @@ import ListeningHistory from './pages/ListeningHistory';
 import TopTracksPage from './pages/TopTracksPage';
 import TopArtists from './pages/TopArtists';
 import Personality from './pages/Personality';
-import Settings from './pages/Settings';
 import Callback from './pages/Callback';
 import Query1 from './pages/Query1';
 import Query2 from './pages/Query2';
@@ -28,7 +27,6 @@ function App() {
             <Route path="top-tracks" element={<TopTracksPage />} />
             <Route path="top-artists" element={<TopArtists />} />
             <Route path="personality" element={<Personality />} />
-            <Route path="settings" element={<Settings />} />
             <Route path="query1" element={<Query1 />} />
             <Route path="query2" element={<Query2 />} />
             <Route path="query3" element={<Query3 />} />
