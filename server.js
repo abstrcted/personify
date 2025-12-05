@@ -494,7 +494,8 @@ app.get('/callback', async (req, res) => {
 
   if (!code) {
     console.log('❌ No authorization code received');
-    return res.redirect(`${process.env.FRONTEND_URI}?error=no_code`);
+    const frontendUri = process.env.FRONTEND_URI.replace(/\/$/, ''); // Remove trailing slash
+    return res.redirect(`${frontendUri}?error=no_code`);
   }
 
   try {
@@ -504,16 +505,20 @@ app.get('/callback', async (req, res) => {
     const { access_token, refresh_token, expires_in } = data.body;
 
     console.log('✅ Tokens received successfully');
-    console.log('Redirecting to:', `${process.env.FRONTEND_URI}/callback`);
+    
+    // Remove trailing slash from FRONTEND_URI to prevent double slashes
+    const frontendUri = process.env.FRONTEND_URI.replace(/\/$/, '');
+    console.log('Redirecting to:', `${frontendUri}/callback`);
 
     // Redirect to frontend with tokens in URL (will move to cookies in production)
     res.redirect(
-      `${process.env.FRONTEND_URI}/callback?access_token=${access_token}&refresh_token=${refresh_token}&expires_in=${expires_in}`
+      `${frontendUri}/callback?access_token=${access_token}&refresh_token=${refresh_token}&expires_in=${expires_in}`
     );
   } catch (error) {
     console.error('❌ Error getting tokens:', error.message);
     console.error('Error details:', error.body || error);
-    res.redirect(`${process.env.FRONTEND_URI}?error=auth_failed`);
+    const frontendUri = process.env.FRONTEND_URI.replace(/\/$/, ''); // Remove trailing slash
+    res.redirect(`${frontendUri}?error=auth_failed`);
   }
 });
 
