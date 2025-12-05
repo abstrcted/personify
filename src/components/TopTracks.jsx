@@ -22,7 +22,7 @@ const TopTracks = () => {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:3001/top-tracks?access_token=${accessToken}&time_range=${timeRange}&limit=20`
+        `/top-tracks?access_token=${accessToken}&time_range=${timeRange}&limit=20`
       );
 
       if (!response.ok) {
@@ -54,7 +54,7 @@ const TopTracks = () => {
 
     try {
       // Send tracks to backend for storage
-      const response = await fetch('http://127.0.0.1:3001/store-tracks-data', {
+      const response = await fetch('/store-tracks-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

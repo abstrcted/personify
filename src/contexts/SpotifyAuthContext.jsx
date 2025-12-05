@@ -66,7 +66,7 @@ export const SpotifyAuthProvider = ({ children }) => {
   // Refresh access token
   const refreshAccessToken = async (refresh_token) => {
     try {
-      const response = await fetch('http://127.0.0.1:3001/refresh', {
+      const response = await fetch('/refresh', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh_token })
@@ -110,7 +110,7 @@ export const SpotifyAuthProvider = ({ children }) => {
 
   // Login - redirect to backend OAuth route
   const login = () => {
-    window.location.href = 'http://127.0.0.1:3001/login';
+    window.location.href = '/login';
   };
 
   // Logout - clear all tokens

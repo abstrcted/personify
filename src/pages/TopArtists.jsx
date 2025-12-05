@@ -17,7 +17,7 @@ const TopArtists = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://127.0.0.1:3001/top-artists?access_token=${accessToken}&time_range=${timeRange}&limit=20`
+        `/top-artists?access_token=${accessToken}&time_range=${timeRange}&limit=20`
       );
       const data = await response.json();
       if (data.items) {
@@ -46,7 +46,7 @@ const TopArtists = () => {
     setLoadingTracks(prev => ({ ...prev, [artistId]: true }));
     try {
       const response = await fetch(
-        `http://127.0.0.1:3001/artist-top-tracks/${artistId}?access_token=${accessToken}&market=US`
+        `/artist-top-tracks/${artistId}?access_token=${accessToken}&market=US`
       );
       const data = await response.json();
       if (data.tracks) {

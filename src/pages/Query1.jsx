@@ -32,7 +32,7 @@ const Query1 = () => {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:3001/api/db/track/${encodeURIComponent(artist.trim())}/${encodeURIComponent(title.trim())}`
+        `/api/db/track/${encodeURIComponent(artist.trim())}/${encodeURIComponent(title.trim())}`
       );
       
       const data = await response.json();

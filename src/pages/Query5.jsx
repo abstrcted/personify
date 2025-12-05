@@ -45,7 +45,7 @@ const Query5 = () => {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:3001/api/liked-songs/${numericUserId}`,
+        `/api/liked-songs/${numericUserId}`,
         {
           method: 'POST',
           headers: {

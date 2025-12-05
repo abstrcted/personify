@@ -27,7 +27,7 @@ const Query3 = () => {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:3001/api/db/browse?sort=${sortBy}&limit=${limit}&offset=${offset}`
+        `/api/db/browse?sort=${sortBy}&limit=${limit}&offset=${offset}`
       );
       
       if (!response.ok) {

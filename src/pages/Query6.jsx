@@ -23,7 +23,7 @@ const Query6 = () => {
 
   const fetchAccounts = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:3001/api/transaction/accounts');
+      const response = await fetch('/api/transaction/accounts');
       const data = await response.json();
       if (data.success) {
         setAccounts(data.accounts);
@@ -59,7 +59,7 @@ const Query6 = () => {
 
     try {
       const response = await fetch(
-        'http://127.0.0.1:3001/api/transaction/transfer',
+        '/api/transaction/transfer',
         {
           method: 'POST',
           headers: {

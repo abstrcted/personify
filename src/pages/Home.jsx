@@ -24,7 +24,7 @@ const Home = () => {
   // Fetch liked songs with full details
   const fetchLikedSongs = useCallback(async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:3001/api/liked-songs/${userId}`);
+      const response = await fetch(`/api/liked-songs/${userId}`);
       const data = await response.json();
       if (data.success) {
         const likedIds = new Set(data.songs.map(song => song.track_id));
@@ -44,12 +44,12 @@ const Home = () => {
       
       if (isLiked) {
         // Unlike
-        await fetch(`http://127.0.0.1:3001/api/liked-songs/${userId}/${trackId}`, {
+        await fetch(`/api/liked-songs/${userId}/${trackId}`, {
           method: 'DELETE'
         });
       } else {
         // Like
-        await fetch(`http://127.0.0.1:3001/api/liked-songs/${userId}`, {
+        await fetch(`/api/liked-songs/${userId}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ trackId })
@@ -80,7 +80,7 @@ const Home = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:3001/api/db/stats');
+        const response = await fetch('/api/db/stats');
         const data = await response.json();
         if (data.success) {
           setDbStats(data.stats);
@@ -99,12 +99,12 @@ const Home = () => {
     try {
       let url;
       if (mode === 'search' && query.trim().length >= 2) {
-        url = `http://127.0.0.1:3001/api/db/search?q=${encodeURIComponent(query)}&limit=${limit}`;
+        url = `/api/db/search?q=${encodeURIComponent(query)}&limit=${limit}`;
       } else if (mode === 'random') {
-        url = `http://127.0.0.1:3001/api/db/random?limit=${limit}`;
+        url = `/api/db/random?limit=${limit}`;
       } else {
         const offset = currentPage * limit;
-        url = `http://127.0.0.1:3001/api/db/browse?limit=${limit}&offset=${offset}&sort=${sortBy}`;
+        url = `/api/db/browse?limit=${limit}&offset=${offset}&sort=${sortBy}`;
       }
 
       const response = await fetch(url);

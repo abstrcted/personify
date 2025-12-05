@@ -10,7 +10,7 @@ const Overview = () => {
 
   const fetchLikedSongs = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:3001/api/liked-songs/${userId}`);
+      const response = await fetch(`/api/liked-songs/${userId}`);
       const data = await response.json();
       if (data.success) {
         setLikedSongs(data.songs);
@@ -25,7 +25,7 @@ const Overview = () => {
 
   const removeSong = async (trackId) => {
     try {
-      await fetch(`http://127.0.0.1:3001/api/liked-songs/${userId}/${trackId}`, {
+      await fetch(`/api/liked-songs/${userId}/${trackId}`, {
         method: 'DELETE'
       });
       // Refetch to update stats and list

@@ -28,7 +28,7 @@ const Query2 = () => {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:3001/api/db/search?q=${encodeURIComponent(searchQuery.trim())}&limit=50`
+        `/api/db/search?q=${encodeURIComponent(searchQuery.trim())}&limit=50`
       );
       
       if (!response.ok) {

@@ -62,7 +62,7 @@ const Personality = () => {
 
   const fetchMusicStats = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:3001/api/liked-songs/${userId}`);
+      const response = await fetch(`/api/liked-songs/${userId}`);
       const data = await response.json();
       if (data.success && data.avgStats) {
         setAvgStats(data.avgStats);
