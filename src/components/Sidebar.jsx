@@ -17,7 +17,7 @@ const Sidebar = () => {
     <aside className="sidebar">
       <div className="sidebar-header">
         <h1 className="sidebar-logo">
-          <IconMusic size={32} stroke={2} />
+          <img src="/Logo.png" alt="Personify Logo" className="sidebar-logo-img" />
           Personify
         </h1>
         <p className="sidebar-tagline">Music meets personality</p>
