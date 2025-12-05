@@ -1,201 +1,253 @@
 # Personify 🎵
 
-A music personality matching application that connects users' personality traits with music preferences using Spotify data.
+A database-driven music application that analyzes your listening preferences and generates personality insights based on song characteristics. Browse our 1.2M song database, like tracks, and discover your musical personality - no Spotify required for core features!
 
-## Features
+## ✨ Features
 
-- Match music preferences with personality traits (Big Five personality model)
-- Discover new artists based on your personality
-- Get personalized music recommendations
-- Analyze music characteristics (energy, valence, danceability, etc.)
-- Track your favorite songs and artists
+### Available Without Spotify
+- 🎵 Browse and search **1.2M songs** from our database
+- ❤️ Like/unlike songs to build your personal collection
+- 🧠 Calculate **personality profiles** from your liked songs
+- 📊 View audio feature analysis (energy, valence, danceability, etc.)
+- 🔍 Access all database query interfaces
 
-## Tech Stack
+### Spotify-Only Features
+- 📈 View your personal **Top Tracks** from Spotify
+- 🎤 View your personal **Top Artists** from Spotify
 
-- **Frontend**: React 18 + Vite (SPA) / Vanilla HTML+CSS+JS (Query Interfaces)
-- **Backend**: Node.js + Express.js
-- **Database**: SQLite with better-sqlite3 (WAL mode)
-- **Styling**: CSS3 with gradients and animations
-- **APIs**: Spotify Web API, GetSongBPM API
-
-## Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
-
-- Node.js (v16 or higher)
-- npm or yarn
+- **Node.js** v16 or higher
+- **npm** or yarn
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone the repository:**
 ```bash
 git clone https://github.com/abstrcted/personify.git
 cd personify
 ```
 
-2. Install dependencies:
+2. **Install dependencies:**
 ```bash
 npm install
 ```
 
-3. Initialize the database:
+3. **Download the full database** (1.2M songs):
+   - Download: [**Personify Database - Google Drive Link**](YOUR_GOOGLE_DRIVE_LINK_HERE)
+   - Extract `personify.db` to the `database/` folder
+   - Verify the file is at: `database/personify.db`
+
+4. **Create `.env` file** in the root directory:
+```env
+# Spotify API Credentials (Optional - only needed for Top Tracks/Artists)
+SPOTIFY_CLIENT_ID=your_spotify_client_id
+SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+SPOTIFY_REDIRECT_URI=http://127.0.0.1:3001/callback
+
+# Server Configuration
+PORT=3001
+FRONTEND_URI=http://127.0.0.1:5174
+
+# Optional API Keys
+GETSONGBPM_API_KEY=your_key_here
+RAPIDAPI_KEY=your_key_here
+```
+
+5. **Start the backend server:**
 ```bash
-node database/init.js
+npm run server
 ```
+You should see: `Server running on port 3001`
 
-4. Set up the transaction demo (optional):
-```bash
-node scripts/setup-transaction-demo.js
-```
-
-5. Start the backend server:
-```bash
-node server.js
-```
-
-6. Open your browser to:
-   - Query interfaces: `http://localhost:3001/index.html`
-   - React app (dev mode): `http://localhost:5173` (run `npm run dev` in separate terminal)
-
-## Database
-
-The application uses SQLite for data storage. The database structure includes:
-
-- **USER**: User accounts and authentication
-- **TRAITS**: Personality traits (extraversion, openness, conscientiousness, agreeableness, calmness)
-- **ARTIST**: Music artist information
-- **ALBUM**: Album data
-- **TRACK**: Individual tracks with audio features
-- **TRACK_ARTIST**: Many-to-many relationship between tracks and artists
-- **USER_FAVORITES**: User's favorite tracks
-- **BankAccounts**: Demo table for transaction processing
-- **TransactionLog**: Audit trail for bank transfers
-
-### Database Commands
-
-- **Initialize database**: `node database/init.js`
-- **Setup transaction demo**: `node scripts/setup-transaction-demo.js`
-- **Reset database**: Delete `database/personify.db` and run init again
-
-See [database/README.md](database/README.md) and [TRANSACTION_DEMO_README.md](TRANSACTION_DEMO_README.md) for more details.
-
-## Project Structure
-
-```
-personify/
-├── controllers/       # Backend query controllers
-│   ├── query1.js     # Track lookup by artist/title
-│   ├── query2.js     # Track search by keyword
-│   ├── query3.js     # Browse tracks with pagination
-````markdown
-# Personify 🎵
-
-Personify is a database-driven web application that explores music metadata and audio features to connect music preferences with personality traits. The codebase contains a Node/Express backend, a React (Vite) frontend, and a SQLite database with example seed data.
-
-**Highlights**
-
-- Six query interfaces (both static HTML and React versions) demonstrating two query patterns required by the assignment.
-- Transaction demo that demonstrates atomic transfers (BEGIN/COMMIT/ROLLBACK) and logging (`BankAccounts`, `TransactionLog`).
-- Uses `better-sqlite3` for a local, file-based relational database and includes schema/seed files.
-
-**Quick Start**
-
-1. Install dependencies:
-
-```bash
-npm install
-```
-
-2. Create a local environment file from the example and fill in keys:
-
-```cmd
-copy .env.example .env
-remind to edit .env with your Spotify / API keys
-```
-
-Note: `.env` is listed in `.gitignore` and must never be committed.
-
-3. Initialize the database (this creates `database/personify.db` locally):
-
-```bash
-node database/init.js
-```
-
-4. (Optional) Prepare the transaction demo:
-
-```bash
-node scripts/setup-transaction-demo.js
-```
-
-5. Start the backend server (default port `3001`):
-
-```bash
-node server.js
-```
-
-6. Start the frontend dev server (Vite) in a separate terminal:
-
+6. **Start the frontend** (in a new terminal):
 ```bash
 npm run dev
 ```
+You should see: `Local: http://localhost:5174/`
 
-7. Open your browser:
+7. **Open your browser:**
+```
+http://127.0.0.1:5174
+```
 
-- Static query interfaces: `http://localhost:3001/index.html`
-- React app (dev): `http://localhost:5173` (or the URL printed by Vite)
+## 🎯 Usage
 
-**Project Structure (important files)**
+### Without Spotify Login:
+1. Open the app
+2. Browse/search the 1.2M song database
+3. Click ❤️ to like songs you enjoy
+4. Navigate to "Personality Profile" to see insights
+5. Explore all query pages
 
-- `server.js` - Express backend and route registration
-- `controllers/` - `query1.js`..`query6.js` (API controller implementations)
-- `public/` - static HTML query interfaces
-- `src/` - React SPA source (pages/components)
-- `database/` - `schema.sql`, `seed.sql`, `init.js`, and `db.js` helper
-- `scripts/` - helper scripts (transaction demo setup)
-- `.env.example` - template environment variables
+### With Spotify Login:
+1. Click "Connect with Spotify" on the home page
+2. Authorize the app
+3. Access "Top Tracks" and "Top Artists" pages
+4. All other features remain available
 
-**Database**
+## 📁 Project Structure
 
-- Schema: `database/schema.sql`
-- Seed: `database/seed.sql`
-- Runtime DB file: `database/personify.db` (ignored by git)
+```
+personify/
+├── database/
+│   ├── personify.db      # SQLite database (download separately)
+│   ├── schema.sql        # Database schema
+│   ├── seed.sql          # Sample seed data
+│   ├── init.js           # Database initialization script
+│   └── db.js             # Database helper functions
+├── src/
+│   ├── pages/            # React pages
+│   │   ├── Home.jsx      # Main database browser
+│   │   ├── Personality.jsx  # Personality insights
+│   │   ├── TopTracksPage.jsx    # Spotify top tracks
+│   │   ├── TopArtists.jsx   # Spotify top artists
+│   │   └── Query1-6.jsx     # Database query demos
+│   ├── components/       # Reusable React components
+│   ├── contexts/         # React context (Spotify auth)
+│   └── services/         # API service layer
+├── controllers/          # Backend API controllers
+│   ├── query1.js        # Track lookup by artist/title
+│   ├── query2.js        # Search tracks
+│   ├── query3.js        # Browse with pagination
+│   ├── query4.js        # User statistics
+│   ├── query5.js        # Add favorites
+│   └── query6.js        # Transaction demo
+├── public/              # Static HTML query interfaces
+├── server.js            # Express backend server
+├── vite.config.js       # Vite configuration
+└── package.json         # Dependencies and scripts
+```
 
-To reset the DB: delete `database/personify.db` and re-run `node database/init.js`.
+## 🗄️ Database
 
-**API & Query Endpoints**
+**Schema Overview:**
+- **USER** - User accounts
+- **TRAITS** - Personality trait calculations
+- **ARTIST** - Music artists (1.2M+ entries)
+- **ALBUM** - Albums
+- **TRACK** - Individual tracks with audio features
+- **TRACK_ARTIST** - Many-to-many artist-track relationships
+- **USER_FAVORITES** - User's liked songs
+- **BankAccounts** - Transaction demo accounts
+- **TransactionLog** - Transaction audit trail
 
-- `GET /api/db/track/:artist/:title`  — lookup track by artist and title
-- `GET /api/db/search?q=keyword`       — search tracks by keyword
-- `GET /api/db/browse?...`             — browse tracks (sort/limit/offset)
-- `GET /api/user-stats/:userId`        — user statistics
-- `POST /api/liked-songs/:userId`     — add a track to favorites
-- `GET /api/transaction/accounts`      — list demo bank accounts
-- `POST /api/transaction/transfer`    — perform a demo transfer (body: `{fromAccountId,toAccountId,amount,simulateError}`)
+**Database Commands:**
+```bash
+npm run db:init    # Initialize with sample data
+npm run db:reset   # Delete and reinitialize (⚠️ loses data)
+```
 
-See `server.js` for exact route registration and the controllers for implementation details.
+## 🔌 API Endpoints
 
-**Notes & Housekeeping**
+### Database Queries (No Auth Required)
+- `GET /api/db/track/:artist/:title` - Lookup track
+- `GET /api/db/search?q=query` - Search tracks
+- `GET /api/db/browse?sort=field&limit=50&offset=0` - Browse tracks
+- `GET /api/db/stats` - Database statistics
+- `GET /api/db/random?limit=50` - Random tracks
 
-- A `.env.example` file is provided; copy it to `.env` and populate your API keys.
-- Temporary PDF extraction/debug helpers that were used during development have been neutralized and the `pdf-parse` dependency removed to avoid shipping unnecessary parsing libraries.
-- If you need to remove sensitive data from git history, this requires a history rewrite — ask and I will prepare a safe plan.
+### User Features (No Auth Required)
+- `GET /api/liked-songs/:userId` - Get user's liked songs
+- `POST /api/liked-songs/:userId` - Add liked song
+- `DELETE /api/liked-songs/:userId/:trackId` - Remove liked song
+- `GET /api/user-stats/:userId` - User statistics
+- `POST /api/calculate-traits?userId=1` - Calculate personality
 
-**Available NPM scripts**
+### Spotify Features (Auth Required)
+- `GET /login` - Initiate Spotify OAuth
+- `GET /callback` - OAuth callback
+- `GET /top-tracks` - User's top tracks
+- `GET /top-artists` - User's top artists
 
-- `npm run dev` — start Vite dev server
-- `npm run build` — build React app for production
-- `npm run preview` — preview production build
-- `node server.js` — start the Express backend
-- `node database/init.js` — initialize/reset database
+### Transaction Demo
+- `GET /api/transaction/accounts` - List accounts
+- `POST /api/transaction/transfer` - Transfer funds
 
-**Next Steps / Helpful Tasks I Can Do**
+## 🔧 Configuration
 
-- Generate a Chen ERD image and add it to `docs/`
-- Draft the Phase III report (3–5 pages) with screenshots and query evidence
-- Produce BCNF proofs and add them to `docs/`
-- Package the submission (zipped code + SQL script with example tuples)
+### For Local Development
+Use the default `.env` settings (already set up for `127.0.0.1`)
 
-Tell me which of the items above you'd like me to do next.
+### For Network Access (Testing with Friends)
+See `QUICK_FIX_GUIDE.md` for detailed instructions on:
+- Finding your IP address
+- Updating `.env` with your network IP
+- Configuring Spotify redirect URIs
+- Setting up firewall rules
 
-````
-## License
+### Spotify API Setup (Optional)
+1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+2. Create a new app
+3. Add redirect URI: `http://127.0.0.1:3001/callback`
+4. Copy Client ID and Secret to `.env`
+
+## 📜 Available Scripts
+
+```bash
+npm run dev          # Start Vite dev server
+npm run server       # Start Express backend
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run db:init      # Initialize database with sample data
+npm run db:reset     # Delete and reinitialize database
+```
+
+## 🐛 Troubleshooting
+
+### Database Not Loading
+- Verify `database/personify.db` exists and is ~100MB+
+- Check backend console for errors
+- Try `npm run db:reset` (⚠️ deletes all data)
+
+### CORS Errors
+- Make sure both servers are running
+- Hard refresh browser (Ctrl+Shift+R)
+- Clear browser cache completely
+
+### Port Already in Use
+- Change `PORT=3001` in `.env` to another port
+- Update `vite.config.js` proxy target to match
+
+### Friend Can't Access
+- Follow instructions in `QUICK_FIX_GUIDE.md`
+- Make sure you're on the same network
+- Check firewall settings
+
+## 📚 Documentation
+
+- `SETUP.md` - Detailed setup instructions
+- `QUICK_FIX_GUIDE.md` - Common issues and solutions
+- `DEPLOYMENT_INSTRUCTIONS.md` - Remote access setup
+- `database/README.md` - Database schema details
+- `docs/SPOTIFY_OPTIONAL_IMPLEMENTATION.md` - Feature requirements
+
+## 🤝 Contributing
+
+This is a course project for database systems. If you'd like to contribute:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+## 📄 License
+
+[Add your license here]
+
+## 🙏 Acknowledgments
+
+- **Spotify Web API** - Music data and user listening history
+- **GetSongBPM API** - Audio feature enrichment
+- **RapidAPI Track Analysis** - Additional audio features
+
+## 📞 Support
+
+For issues or questions:
+- Check `QUICK_FIX_GUIDE.md` for common solutions
+- Review existing GitHub Issues
+- Create a new issue with detailed information
+
+---
+
+**Built with** ❤️ **for CS Database Systems**
