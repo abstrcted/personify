@@ -12,6 +12,46 @@ export default defineConfig({
         target: 'http://localhost:3001',
         changeOrigin: true,
         secure: false
+      },
+      '/login': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false
+      },
+      '/callback': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false
+      },
+      '/me': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false
+      },
+      '/refresh': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false
+      },
+      '/top-tracks': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false
+      },
+      '/top-artists': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false
+      },
+      '/artist-top-tracks': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false
+      },
+      '/store-tracks-data': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false
       }
     }
   }
