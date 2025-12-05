@@ -116,6 +116,69 @@
   box-sizing: border-box;
 }
 
+/* Spotify Connection Banner */
+.spotify-connection-banner {
+  background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
+  color: white;
+  padding: 1rem 2rem;
+  margin: -2rem -2rem 2rem -2rem;
+  border-radius: 0;
+  box-shadow: 0 4px 12px rgba(29, 185, 84, 0.2);
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  max-width: 1200px;
+}
+
+.banner-text {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.banner-text strong {
+  display: block;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.banner-text p {
+  margin: 0;
+  opacity: 0.95;
+  font-size: 0.9rem;
+}
+
+.btn-spotify-small {
+  background: white;
+  color: #1db954;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 500px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-spotify-small:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-spotify-small svg {
+  flex-shrink: 0;
+}
+
 .home-dashboard {
   flex: 1;
   min-width: 0;

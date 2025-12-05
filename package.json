@@ -8,7 +8,9 @@
     "server": "node server.js",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "db:init": "node database/init.js",
+    "db:reset": "del database\\personify.db 2>nul & node database/init.js"
   },
   "dependencies": {
     "@tabler/icons-react": "^3.35.0",

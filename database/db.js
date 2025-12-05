@@ -38,20 +38,20 @@ export const dbHelpers = {
 
   setUserTraits: (userId, traits) => {
     const {
-      patience, moodiness, openness, chaoticness, extraversion, whimsy,
-      balance, calmness, groundedness, introspection, joyfulness, hustle,
+      reflective, moodiness, openness, chaoticness, extraversion, whimsy,
+      balance, calmness, groundedness, introspection, joyfulness, conversational,
       conscientiousness, agreeableness
     } = traits;
     
     return db.prepare(`
       INSERT INTO TRAITS (
-        user_id, patience, moodiness, openness, chaoticness, extraversion, whimsy,
-        balance, calmness, groundedness, introspection, joyfulness, hustle,
+        user_id, reflective, moodiness, openness, chaoticness, extraversion, whimsy,
+        balance, calmness, groundedness, introspection, joyfulness, conversational,
         conscientiousness, agreeableness
       )
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(user_id) DO UPDATE SET
-        patience = excluded.patience,
+        reflective = excluded.reflective,
         moodiness = excluded.moodiness,
         openness = excluded.openness,
         chaoticness = excluded.chaoticness,
@@ -62,12 +62,12 @@ export const dbHelpers = {
         groundedness = excluded.groundedness,
         introspection = excluded.introspection,
         joyfulness = excluded.joyfulness,
-        hustle = excluded.hustle,
+        conversational = excluded.conversational,
         conscientiousness = excluded.conscientiousness,
         agreeableness = excluded.agreeableness
     `).run(
-      userId, patience, moodiness, openness, chaoticness, extraversion, whimsy,
-      balance, calmness, groundedness, introspection, joyfulness, hustle,
+      userId, reflective, moodiness, openness, chaoticness, extraversion, whimsy,
+      balance, calmness, groundedness, introspection, joyfulness, conversational,
       conscientiousness, agreeableness
     );
   },
@@ -78,7 +78,7 @@ export const dbHelpers = {
       // Get audio feature averages and track data
       const stats = db.prepare(`
         SELECT 
-          ROUND(AVG(T.duration_ms), 0) as avg_duration_ms,
+          ROUND(AVG(T.speechiness), 3) as avg_speechiness,
           ROUND(AVG(T.valence), 3) as avg_valence,
           ROUND(AVG(T.energy), 3) as avg_energy,
           ROUND(AVG(T.danceability), 3) as avg_danceability,
@@ -99,11 +99,8 @@ export const dbHelpers = {
       }
 
       // Calculate traits (0-100 scale)
-      // Patience: longer songs = more patience (normalize avg duration to 0-100)
-      // Typical song: 180,000ms (3min) to 300,000ms (5min)
-      const patience = Math.min(100, Math.max(0, 
-        Math.round(((stats.avg_duration_ms - 120000) / 240000) * 100)
-      ));
+      // Reflective: Based on speechiness (inverted - lower speechiness = more reflective)
+      const reflective = Math.round((1 - (stats.avg_speechiness || 0)) * 100);
 
       // Moodiness: lower valence = higher moodiness (inverse relationship)
       const moodiness = Math.round((1 - stats.avg_valence) * 100);
@@ -130,10 +127,10 @@ export const dbHelpers = {
       const groundedness = 100 - whimsy;
       const introspection = 100 - extraversion;
       const joyfulness = 100 - moodiness;
-      const hustle = 100 - patience;
+      const conversational = 100 - reflective;
 
       return {
-        patience,
+        reflective,
         moodiness,
         openness,
         chaoticness,
@@ -144,7 +141,7 @@ export const dbHelpers = {
         groundedness,
         introspection,
         joyfulness,
-        hustle,
+        conversational,
         conscientiousness: 50, // Placeholder for future calculation
         agreeableness: 50 // Placeholder for future calculation
       };

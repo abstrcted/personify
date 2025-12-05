@@ -11,7 +11,7 @@ import {
 import './Sidebar.css';
 
 const Sidebar = () => {
-  const { user, logout } = useSpotifyAuth();
+  const { user, logout, isAuthenticated } = useSpotifyAuth();
 
   return (
     <aside className="sidebar">
@@ -41,14 +41,14 @@ const Sidebar = () => {
           <span className="nav-text">Home</span>
         </NavLink>
 
-        <NavLink to="/top-tracks" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+        <NavLink to="/top-tracks" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} title={!isAuthenticated ? 'Requires Spotify connection' : ''}>
           <IconMusic className="nav-icon" size={20} stroke={2} />
-          <span className="nav-text">Top Tracks</span>
+          <span className="nav-text">Top Tracks {!isAuthenticated && <span className="spotify-required">🔒</span>}</span>
         </NavLink>
 
-        <NavLink to="/top-artists" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+        <NavLink to="/top-artists" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} title={!isAuthenticated ? 'Requires Spotify connection' : ''}>
           <IconMicrophone className="nav-icon" size={20} stroke={2} />
-          <span className="nav-text">Top Artists</span>
+          <span className="nav-text">Top Artists {!isAuthenticated && <span className="spotify-required">🔒</span>}</span>
         </NavLink>
 
         <div className="nav-divider"></div>

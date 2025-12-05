@@ -65,7 +65,16 @@ const TopArtists = () => {
   if (!isAuthenticated) {
     return (
       <div className="top-artists-login">
-        <SpotifyLogin />
+        <div className="feature-locked-message">
+          <h2>🎤 Top Artists</h2>
+          <p className="locked-description">
+            This feature requires Spotify authentication to access your personal listening history.
+          </p>
+          <SpotifyLogin />
+          <div className="feature-note">
+            <strong>Note:</strong> You can still explore our 1.2M song database and calculate personality profiles without connecting Spotify!
+          </div>
+        </div>
       </div>
     );
   }

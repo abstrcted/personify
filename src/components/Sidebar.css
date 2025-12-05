@@ -141,6 +141,16 @@
 
 .nav-text {
   font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.spotify-required {
+  font-size: 0.75rem;
+  opacity: 0.6;
+  margin-left: auto;
 }
 
 .nav-divider {

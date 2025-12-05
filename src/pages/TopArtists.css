@@ -7,6 +7,42 @@
   padding: 2rem;
 }
 
+.feature-locked-message {
+  text-align: center;
+  max-width: 500px;
+  padding: 3rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.feature-locked-message h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #191414;
+}
+
+.locked-description {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.feature-note {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #e8f5e9;
+  border-radius: 10px;
+  color: #2e7d32;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.feature-note strong {
+  color: #1b5e20;
+}
+
 .top-artists-container {
   width: 100%;
   min-height: 100vh;
